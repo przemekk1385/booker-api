@@ -7,7 +7,7 @@ makemigrations:
 migrate:
 	doppler run -- ./manage.py migrate
 
-updb:
+up_db:
 	doppler run -- docker-compose -f docker-compose.dev.yml up -d db
 
 down:
