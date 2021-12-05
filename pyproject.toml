@@ -7,16 +7,18 @@ authors = ["Przemysław Kaliś <przemek.kalis@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 Django = "^3.2.9"
+django-cors-headers = "^3.10.0"
 django-environ = "^0.8.1"
 djangorestframework = "^3.12.4"
 psycopg2-binary = "^2.9.2"
-django-cors-headers = "^3.10.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 black = "^21.11b1"
+Faker = "^9.9.0"
 isort = "^5.10.1"
 pre-commit = "^2.16.0"
+pytest-django = "^4.5.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
