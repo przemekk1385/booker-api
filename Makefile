@@ -1,11 +1,14 @@
-runserver:
-	doppler run -- ./manage.py runserver
+createsuperuser:
+	doppler run -- ./manage.py createsuperuser
 
 makemigrations:
 	doppler run -- ./manage.py makemigrations
 
 migrate:
 	doppler run -- ./manage.py migrate
+
+runserver:
+	doppler run -- ./manage.py runserver
 
 shell:
 	doppler run -- ./manage.py shell
