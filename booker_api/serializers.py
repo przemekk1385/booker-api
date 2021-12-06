@@ -5,10 +5,12 @@ from booker_api.models import Booking, Stay
 
 class BookingSerializer(serializers.ModelSerializer):
     apartment = serializers.SerializerMethodField(read_only=True)
+    slot_label = serializers.SerializerMethodField(read_only=True)
+
     identifier = serializers.CharField(write_only=True)
 
     class Meta:
-        fields = ("apartment", "day", "identifier", "slot")
+        fields = ("apartment", "day", "identifier", "slot", "slot_label")
         model = Booking
 
     def create(self, validated_data):
@@ -21,11 +23,8 @@ class BookingSerializer(serializers.ModelSerializer):
     def get_apartment(self, obj):
         return obj.stay.get_apartment_display()
 
-    def to_representation(self, instance):
-        return {
-            **super().to_representation(instance),
-            "slot": instance.get_slot_display(),
-        }
+    def get_slot_label(self, obj):
+        return obj.get_slot_display()
 
     def validate(self, attrs):
         identifier = attrs.pop("identifier")

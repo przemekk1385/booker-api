@@ -46,10 +46,9 @@ def test_create(api_client, faker):
         "slot": Booking.Slot.FROM11,
     }
 
-    response = api_client.post(
-        reverse("booker_api:booking-list"), payload
-    )
+    response = api_client.post(reverse("booker_api:booking-list"), payload)
 
     assert response.status_code == http.HTTPStatus.CREATED, response.json()
     assert response.json()["apartment"] == Stay.Apartment.APARTMENT_1.label
-    assert response.json()["slot"] == Booking.Slot.FROM11.label
+    assert response.json()["slot"] == Booking.Slot.FROM11
+    assert response.json()["slot_label"] == Booking.Slot.FROM11.label
