@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from golden_view_wellness_api.models import Booking, Stay
+from booker_api.models import Booking, Stay
 
 
 class BookingSerializer(serializers.ModelSerializer):

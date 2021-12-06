@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "golden-view-wellness-api"
+name = "booker-api"
 version = "0.1.0"
 description = ""
 authors = ["Przemysław Kaliś <przemek.kalis@gmail.com>"]

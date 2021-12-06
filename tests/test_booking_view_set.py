@@ -4,7 +4,7 @@ from datetime import date, timedelta
 import pytest
 from django.urls import reverse
 
-from golden_view_wellness_api.models import Booking, Stay
+from booker_api.models import Booking, Stay
 
 
 @pytest.mark.django_db
@@ -25,7 +25,7 @@ def test_list(api_client, faker):
             slot=faker.random_element(Booking.Slot),
         )
 
-    response = api_client.get(reverse("golden_view_wellness_api:booking-list"))
+    response = api_client.get(reverse("booker_api:booking-list"))
 
     assert response.status_code == http.HTTPStatus.OK
     assert len(response.json()) == days
@@ -47,7 +47,7 @@ def test_create(api_client, faker):
     }
 
     response = api_client.post(
-        reverse("golden_view_wellness_api:booking-list"), payload
+        reverse("booker_api:booking-list"), payload
     )
 
     assert response.status_code == http.HTTPStatus.CREATED, response.json()

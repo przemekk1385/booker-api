@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from .apps import GoldenViewWellnessApiConfig as AppConfig
+from .apps import BookerApiConfig as AppConfig
 from .routers import router
 
 API_VERSION_PREFIX = "v1"

@@ -62,7 +62,7 @@ class Migration(migrations.Migration):
                     "stay",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="golden_view_wellness_api.stay",
+                        to="booker_api.stay",
                     ),
                 ),
             ],

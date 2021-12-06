@@ -1,5 +1,5 @@
 """
-ASGI config for golden_view_wellness project.
+ASGI config for booker project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "golden_view_wellness.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "booker.settings")
 
 application = get_asgi_application()
