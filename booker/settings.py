@@ -141,6 +141,12 @@ STATIC_URL = "/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
+# Custom user model
+# https://docs.djangoproject.com/en/3.2/topics/auth/customizing/#substituting-a-custom-user-model
+
+AUTH_USER_MODEL = "booker_api.User"
+
+
 # django-cors-headers
 # https://github.com/adamchainz/django-cors-headers
 
