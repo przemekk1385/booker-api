@@ -15,6 +15,9 @@ class Stay(models.Model):
     date_from = models.DateField()
     date_to = models.DateField()
 
+    class Meta:
+        unique_together = ("apartment", "date_from", "date_to")
+
 
 class Booking(models.Model):
     class Slot(models.IntegerChoices):
