@@ -6,7 +6,7 @@ from django.apps import apps
 from django.urls import reverse
 from rest_framework.settings import api_settings
 
-from booker_api.models import Booking, Stay
+from booker_api.models import Apartment, Booking, Stay
 
 STAY_DAYS = 7
 
@@ -14,7 +14,7 @@ STAY_DAYS = 7
 @pytest.fixture
 def stay_instance(faker):
     return Stay.objects.create(
-        apartment=faker.random_element(Stay.Apartment),
+        apartment=faker.random_element(Apartment.objects.all()),
         date_from=date.today(),
         date_to=date.today() + timedelta(days=STAY_DAYS),
         identifier=faker.numerify("#########"),

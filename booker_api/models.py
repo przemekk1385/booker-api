@@ -1,16 +1,13 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+
+
+class Apartment(models.Model):
+    label = models.CharField(max_length=20)
 
 
 class Stay(models.Model):
-    class Apartment(models.IntegerChoices):
-        APARTMENT_1 = 1, _("APARTMENT 1")
-        APARTMENT_2 = 2, _("APARTMENT 2")
-
-    apartment = models.PositiveSmallIntegerField(
-        choices=Apartment.choices,
-    )
+    apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
     identifier = models.CharField(max_length=9)
     date_from = models.DateField()
     date_to = models.DateField()
@@ -36,4 +33,4 @@ class Booking(models.Model):
 
 
 class User(AbstractUser):
-    pass
+    apartments = models.ManyToManyField(Apartment, related_name="apartments")
