@@ -1,6 +1,13 @@
+from datetime import date, timedelta
+
+from django.apps import apps
+from django.db.models import ExpressionWrapper, F, Q, fields
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from booker_api.models import Booking, Stay
+
+DAYS_BETWEEN_BOOKINGS = apps.get_app_config("booker_api").days_between_bookings
 
 
 class BookingSerializer(serializers.ModelSerializer):
@@ -28,9 +35,42 @@ class BookingSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         identifier = attrs.pop("identifier")
+        day = attrs["day"]
 
-        attrs["stay"] = Stay.objects.filter(
-            date_from__lte=attrs["day"], date_to__gte=attrs["day"]
-        ).get(identifier=identifier)
+        try:
+            stay = Stay.objects.filter(date_from__lte=day, date_to__gte=day).get(
+                identifier=identifier
+            )
+        except Stay.DoesNotExist as e_info:
+            raise serializers.ValidationError(
+                {
+                    "identifier": _(
+                        f"There is no stay associated with identifier {identifier}."
+                    )
+                }
+            ) from e_info
 
+        if (
+            Booking.objects.filter(stay=stay)
+            .annotate(days_between=F("day") - day)
+            .filter(
+                Q(days_between__gte=timedelta(days=DAYS_BETWEEN_BOOKINGS))
+                | Q(days_between__lte=timedelta(days=-DAYS_BETWEEN_BOOKINGS))
+            )
+            .exists()
+        ):
+            msg = (
+                _("Booking is possible once per day.")
+                if DAYS_BETWEEN_BOOKINGS == 1
+                else _(f"Booking is possible once per {DAYS_BETWEEN_BOOKINGS} days.")
+            )
+            raise serializers.ValidationError({"day": msg})
+
+        attrs["stay"] = stay
         return attrs
+
+    def validate_day(self, val):
+        if val < date.today():
+            raise serializers.ValidationError(_(f"{val} already passed."))
+
+        return val
