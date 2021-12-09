@@ -33,4 +33,4 @@ class Booking(models.Model):
 
 
 class User(AbstractUser):
-    apartments = models.ManyToManyField(Apartment, related_name="apartments")
+    pass
