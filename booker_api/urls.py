@@ -1,7 +1,7 @@
 from django.urls import include, path
 
-from .apps import BookerApiConfig as AppConfig
-from .routers import router
+from booker_api.apps import BookerApiConfig as AppConfig
+from booker_api.routers import router
 
 API_VERSION_PREFIX = "v1"
 
