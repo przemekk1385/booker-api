@@ -5,6 +5,12 @@ from django.db import models
 class Apartment(models.Model):
     label = models.CharField(max_length=20)
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} label={self.label}>"
+
+    def __str__(self):
+        return self.label
+
 
 class Stay(models.Model):
     apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
@@ -14,6 +20,16 @@ class Stay(models.Model):
 
     class Meta:
         unique_together = ("apartment", "date_from", "date_to")
+
+    @property
+    def formatted_identifier(self):
+        return "-".join([self.identifier[i : i + 3] for i in range(0, 9, 3)])
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} apartment={self.apartment} identifier={self.identifier}>"
+
+    def __str__(self):
+        return f"{self.apartment} {self.formatted_identifier}"
 
 
 class Booking(models.Model):
@@ -30,3 +46,14 @@ class Booking(models.Model):
 
     day = models.DateField()
     slot = models.PositiveSmallIntegerField(choices=Slot.choices)
+
+    def __repr__(self):
+        return (
+            f"<{self.__class__.__name__}"
+            f" day={self.day}"
+            f" slot={self.get_slot_display()}"
+            f" identifier={self.stay.identifier}>"
+        )
+
+    def __str__(self):
+        return f"{self.day} {self.get_slot_display()} {self.stay.formatted_identifier}"
