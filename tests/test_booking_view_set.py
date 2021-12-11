@@ -37,9 +37,11 @@ def test_create_ok(api_client, faker, stay_instance):
     response = api_client.post(reverse("booker_api:booking-list"), payload)
 
     assert response.status_code == http.HTTPStatus.CREATED, response.json()
-    assert response.json()["apartment"] == stay_instance.apartment.label
-    assert response.json()["slot"] == payload["slot"]
-    assert response.json()["slot_label"] == payload["slot"].label
+
+    response_data = response.json()
+    assert response_data["apartment"] == stay_instance.apartment.label
+    assert response_data["slot"] == payload["slot"]
+    assert response_data["slot_label"] == payload["slot"].label
 
 
 @pytest.mark.django_db
