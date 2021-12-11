@@ -15,6 +15,12 @@ def api_client() -> APIClient:
 
 
 @pytest.fixture
+def authenticated_api_client(api_client, user_instance) -> APIClient:
+    api_client.force_authenticate(user_instance)
+    yield api_client
+
+
+@pytest.fixture
 def stay_instance(faker) -> Stay:
     return Stay.objects.create(
         apartment=faker.random_element(Apartment.objects.all()),
