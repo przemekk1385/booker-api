@@ -5,6 +5,7 @@ import pytest
 from rest_framework.test import APIClient
 
 from booker_api.models import Apartment, Stay
+from operator_api.models import User
 from tests.constants import STAY_DAYS
 
 
@@ -21,6 +22,13 @@ def stay_instance(faker) -> Stay:
         date_to=date.today() + timedelta(days=STAY_DAYS),
         identifier=faker.numerify("#########"),
     )
+
+
+@pytest.fixture
+def user_instance(faker) -> User:
+    user = User.objects.create_user(email=faker.email(), password=faker.word())
+    user.apartments.set(Apartment.objects.all())
+    return user
 
 
 @pytest.fixture()

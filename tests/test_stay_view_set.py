@@ -9,12 +9,13 @@ from tests import constants
 
 
 @pytest.mark.django_db
-def test_list(api_client, make_stay_instance):
+def test_list(api_client, make_stay_instance, user_instance):
     for i in range(3):
         make_stay_instance(
             date_from=date.today() + timedelta(days=i * constants.STAY_DAYS)
         )
 
+    api_client.force_authenticate(user_instance)
     response = api_client.get(reverse("operator_api:stay-list"))
 
     assert response.status_code == http.HTTPStatus.OK, response.json()
@@ -22,7 +23,7 @@ def test_list(api_client, make_stay_instance):
 
 
 @pytest.mark.django_db
-def test_create(api_client, faker):
+def test_create(api_client, faker, user_instance):
     payload = {
         "apartment": faker.random_element(Apartment.objects.all()).id,
         "date_from": date.today(),
@@ -30,6 +31,7 @@ def test_create(api_client, faker):
         "identifier": faker.numerify("#########"),
     }
 
+    api_client.force_authenticate(user_instance)
     response = api_client.post(reverse("operator_api:stay-list"), payload)
 
     assert response.status_code == http.HTTPStatus.CREATED, response.json()
@@ -37,7 +39,8 @@ def test_create(api_client, faker):
 
 
 @pytest.mark.django_db
-def test_retrieve(api_client, stay_instance):
+def test_retrieve(api_client, stay_instance, user_instance):
+    api_client.force_authenticate(user_instance)
     response = api_client.get(
         reverse("operator_api:stay-detail", args=[stay_instance.id])
     )
@@ -53,10 +56,11 @@ def test_retrieve(api_client, stay_instance):
 
 
 @pytest.mark.django_db
-def test_update(api_client, faker, stay_instance):
+def test_update(api_client, faker, stay_instance, user_instance):
     prev_identifier = stay_instance.identifier
     payload = {"identifier": faker.numerify("#########")}
 
+    api_client.force_authenticate(user_instance)
     response = api_client.patch(
         reverse("operator_api:stay-detail", args=[stay_instance.id]), payload
     )
@@ -68,7 +72,8 @@ def test_update(api_client, faker, stay_instance):
 
 
 @pytest.mark.django_db
-def test_delete(api_client, stay_instance):
+def test_delete(api_client, stay_instance, user_instance):
+    api_client.force_authenticate(user_instance)
     response = api_client.delete(
         reverse("operator_api:stay-detail", args=[stay_instance.id])
     )
