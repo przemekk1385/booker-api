@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractBaseUser
 from django.db import models
 
 
@@ -30,7 +30,3 @@ class Booking(models.Model):
 
     day = models.DateField()
     slot = models.PositiveSmallIntegerField(choices=Slot.choices)
-
-
-class User(AbstractUser):
-    pass
