@@ -10,18 +10,18 @@ class StayAccessPolicy(AccessPolicy):
     statements = [
         {
             "action": ["list", "retrieve"],
-            "principal": "*",
+            "principal": "authenticated",
             "effect": "allow",
         },
         {
             "action": ["create"],
-            "principal": "*",
+            "principal": "authenticated",
             "effect": "allow",
             "condition": "can_create",
         },
         {
             "action": ["update", "partial_update", "destroy"],
-            "principal": "*",
+            "principal": "authenticated",
             "effect": "allow",
             "condition": "can_update_or_destroy",
         },
@@ -40,5 +40,5 @@ class StayAccessPolicy(AccessPolicy):
 
 class StayViewSet(viewsets.ModelViewSet):
     queryset = Stay.objects.all()
-    permission_classes = (IsAuthenticated, StayAccessPolicy)
+    permission_classes = (StayAccessPolicy,)
     serializer_class = StaySerializer
