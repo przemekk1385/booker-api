@@ -9,22 +9,33 @@ from operator_api.serializers import StaySerializer
 class StayAccessPolicy(AccessPolicy):
     statements = [
         {
-            "action": ["list"],
+            "action": ["list", "retrieve"],
             "principal": "*",
             "effect": "allow",
         },
         {
-            "action": ["create", "retrieve", "update", "partial_update", "destroy"],
+            "action": ["create"],
             "principal": "*",
             "effect": "allow",
-            "condition": "is_apartment_operator",
+            "condition": "can_create",
+        },
+        {
+            "action": ["update", "partial_update", "destroy"],
+            "principal": "*",
+            "effect": "allow",
+            "condition": "can_update_or_destroy",
         },
     ]
 
     @staticmethod
-    def is_apartment_operator(request, view, view_action: str) -> bool:
-        print("foo")
-        return True
+    def can_create(request, view, view_action: str) -> bool:
+        return request.user.apartments.filter(id=request.data.get("apartment")).exists()
+
+    @staticmethod
+    def can_update_or_destroy(request, view, view_action: str) -> bool:
+        return request.user.apartments.filter(
+            id=view.get_object().apartment.id
+        ).exists()
 
 
 class StayViewSet(viewsets.ModelViewSet):
