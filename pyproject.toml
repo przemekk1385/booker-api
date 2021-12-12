@@ -1,8 +1,14 @@
 [tool.poetry]
-name = "booker-api"
+name = "booker"
 version = "0.1.0"
 description = ""
 authors = ["Przemysław Kaliś <przemek.kalis@gmail.com>"]
+packages = [
+    { include = "./manage.py" },
+    { include = "booker" },
+    { include = "booker_api" },
+    { include = "operator_api" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
