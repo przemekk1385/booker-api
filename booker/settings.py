@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
+    "rest_framework.authtoken",
     "booker_api",
     "operator_api",
 ]
@@ -103,7 +104,9 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": (
+            "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        )
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
@@ -146,6 +149,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # https://docs.djangoproject.com/en/3.2/topics/auth/customizing/#substituting-a-custom-user-model
 
 AUTH_USER_MODEL = "operator_api.User"
+
+
+# Django REST Framework
+# https://www.django-rest-framework.org
+
+REST_FRAMEWORK = {
+    "DATE_FORMAT": "%Y-%m-%d",
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+}
 
 
 # django-cors-headers
