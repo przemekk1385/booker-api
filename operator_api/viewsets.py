@@ -1,6 +1,5 @@
 from rest_access_policy import AccessPolicy
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
 
 from booker_api.models import Stay
 from operator_api.serializers import StaySerializer
