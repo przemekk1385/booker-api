@@ -18,3 +18,6 @@ up_db:
 
 down:
 	doppler run -- docker-compose -f docker-compose.dev.yml down
+
+requirements:
+	poetry export -f requirements.txt --output requirements.txt
