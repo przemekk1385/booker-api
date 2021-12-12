@@ -1,0 +1,29 @@
+version: 2.1
+
+orbs:
+  heroku: circleci/heroku@0.0.10
+  python: circleci/python@1.5.0
+
+jobs:
+  build:
+    docker:
+      - image: cimg/python:3.9.7
+    steps:
+      - checkout
+      - run:
+          name: "Install"
+          command: poetry install
+      - run:
+          name: "Run pytest"
+          command: "poetry run pytest"
+
+workflows:
+  heroku-deploy:
+    jobs:
+      - build
+      - heroku/deploy-via-git:
+          requires:
+            - build
+          filters:
+            branches:
+              only: sequential-branch-filter
