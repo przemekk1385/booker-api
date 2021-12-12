@@ -1,8 +1,7 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
 
-from booker_api.models import Booking, Stay, User
+from booker_api.models import Apartment, Booking, Stay
 
+admin.site.register(Apartment)
 admin.site.register(Booking)
 admin.site.register(Stay)
-admin.site.register(User, UserAdmin)

@@ -6,19 +6,7 @@ from django.apps import apps
 from django.urls import reverse
 from rest_framework.settings import api_settings
 
-from booker_api.models import Booking, Stay
-
-STAY_DAYS = 7
-
-
-@pytest.fixture
-def stay_instance(faker):
-    return Stay.objects.create(
-        apartment=faker.random_element(Stay.Apartment),
-        date_from=date.today(),
-        date_to=date.today() + timedelta(days=STAY_DAYS),
-        identifier=faker.numerify("#########"),
-    )
+from booker_api.models import Booking
 
 
 @pytest.mark.django_db
@@ -49,9 +37,11 @@ def test_create_ok(api_client, faker, stay_instance):
     response = api_client.post(reverse("booker_api:booking-list"), payload)
 
     assert response.status_code == http.HTTPStatus.CREATED, response.json()
-    assert response.json()["apartment"] == stay_instance.apartment.label
-    assert response.json()["slot"] == payload["slot"]
-    assert response.json()["slot_label"] == payload["slot"].label
+
+    response_data = response.json()
+    assert response_data["apartment"] == stay_instance.apartment.label
+    assert response_data["slot"] == payload["slot"]
+    assert response_data["slot_label"] == payload["slot"].label
 
 
 @pytest.mark.django_db

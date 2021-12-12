@@ -28,7 +28,7 @@ class BookingSerializer(serializers.ModelSerializer):
         )
 
     def get_apartment(self, obj):
-        return obj.stay.get_apartment_display()
+        return obj.stay.apartment.label
 
     def get_slot_label(self, obj):
         return obj.get_slot_display()

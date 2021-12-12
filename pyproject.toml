@@ -1,8 +1,14 @@
 [tool.poetry]
-name = "booker-api"
+name = "booker"
 version = "0.1.0"
 description = ""
 authors = ["Przemysław Kaliś <przemek.kalis@gmail.com>"]
+packages = [
+    { include = "./manage.py" },
+    { include = "booker" },
+    { include = "booker_api" },
+    { include = "operator_api" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -11,6 +17,7 @@ django-cors-headers = "^3.10.0"
 django-environ = "^0.8.1"
 djangorestframework = "^3.12.4"
 psycopg2-binary = "^2.9.2"
+drf-access-policy = "^1.1.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
