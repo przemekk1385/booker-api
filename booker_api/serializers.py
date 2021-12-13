@@ -74,3 +74,21 @@ class BookingSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(_(f"{val} already passed."))
 
         return val
+
+
+class SlotSerializer(serializers.BaseSerializer):
+    def create(self, validated_data):
+        raise NotImplementedError("SlotSerializer is read-only.")
+
+    def update(self, instance, validated_data):
+        raise NotImplementedError("SlotSerializer is read-only.")
+
+    def to_internal_value(self, data):
+        raise NotImplementedError("SlotSerializer is read-only.")
+
+    def to_representation(self, instance):
+        return {
+            "label": instance.label,
+            "name": instance.name,
+            "value": instance.value,
+        }

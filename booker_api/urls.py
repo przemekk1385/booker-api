@@ -1,5 +1,6 @@
-from django.urls import include, path
+from django.urls import include, path, re_path
 
+from booker_api import views
 from booker_api.apps import BookerApiConfig as AppConfig
 from booker_api.routers import router
 
@@ -9,4 +10,5 @@ app_name = AppConfig.name
 
 urlpatterns = [
     path(f"{API_VERSION_PREFIX}/", include(router.urls)),
+    re_path(fr"^{API_VERSION_PREFIX}/slot/$", views.slot_list, name="slot-list"),
 ]
