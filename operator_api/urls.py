@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import include, path, re_path
 
 from operator_api import views
 from operator_api.apps import OperatorApiConfig as AppConfig
@@ -10,7 +10,9 @@ app_name = AppConfig.name
 
 urlpatterns = [
     path(f"{API_VERSION_PREFIX}/", include(router.urls)),
-    path(
-        f"{API_VERSION_PREFIX}/apartment", views.apartment_list, name="apartment-list"
+    re_path(
+        fr"^{API_VERSION_PREFIX}/apartment/$",
+        views.apartment_list,
+        name="apartment-list",
     ),
 ]

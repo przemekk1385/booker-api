@@ -14,7 +14,7 @@ def test_list_ok(authenticated_api_client):
     assert len(response.json()) == Apartment.objects.count()
 
 
-def test_list_faile(api_client):
+def test_list_failed(api_client):
     response = api_client.get(reverse("operator_api:apartment-list"))
 
     assert response.status_code == http.HTTPStatus.FORBIDDEN, response.json()
