@@ -7,8 +7,6 @@ from rest_framework import serializers
 
 from booker_api.models import Booking, Stay
 
-DAYS_BETWEEN_BOOKINGS = apps.get_app_config("booker_api").days_between_bookings
-
 
 class BookingSerializer(serializers.ModelSerializer):
     apartment = serializers.SerializerMethodField(read_only=True)
@@ -34,6 +32,8 @@ class BookingSerializer(serializers.ModelSerializer):
         return obj.get_slot_display()
 
     def validate(self, attrs):
+        days_between_bookings = apps.get_app_config("booker_api").days_between_bookings
+
         identifier = attrs.pop("identifier")
         day = attrs["day"]
 
@@ -52,7 +52,7 @@ class BookingSerializer(serializers.ModelSerializer):
 
         blocked_days = [
             day + timedelta(days=i)
-            for i in range(-DAYS_BETWEEN_BOOKINGS + 1, DAYS_BETWEEN_BOOKINGS)
+            for i in range(-days_between_bookings + 1, days_between_bookings)
         ]
         if Booking.objects.filter(
             day__in=blocked_days,
@@ -60,8 +60,8 @@ class BookingSerializer(serializers.ModelSerializer):
         ).exists():
             msg = (
                 _("Booking is possible once per day.")
-                if DAYS_BETWEEN_BOOKINGS == 1
-                else _(f"Booking is possible once per {DAYS_BETWEEN_BOOKINGS} days.")
+                if days_between_bookings == 1
+                else _(f"Booking is possible once per {days_between_bookings} days.")
             )
             raise serializers.ValidationError({"day": msg})
 
