@@ -16,14 +16,14 @@ def test_list(api_client, faker, stay_instance):
     for i in range(total_bookings):
         Booking.objects.create(
             stay=stay_instance,
-            day=stay_instance.date_from + timedelta(days=i + 1),
+            day=stay_instance.date_from + timedelta(days=i),
             slot=faker.random_element(Booking.Slot),
         )
 
     response = api_client.get(reverse("booker_api:booking-list"))
 
     assert response.status_code == http.HTTPStatus.OK, response.json()
-    assert len(response.json()) == total_bookings
+    assert len(response.json()) == 2
 
 
 @pytest.mark.django_db
