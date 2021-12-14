@@ -13,9 +13,9 @@ django-environ==0.8.1; python_version >= "3.4" and python_version < "4" \
 django==3.2.10; python_version >= "3.6" \
     --hash=sha256:df6f5eb3c797b27c096d61494507b7634526d4ce8d7c8ca1e57a4fb19c0738a3 \
     --hash=sha256:074e8818b4b40acdc2369e67dcd6555d558329785408dcd25340ee98f1f1d5c4
-djangorestframework==3.12.4; python_version >= "3.5" \
-    --hash=sha256:6d1d59f623a5ad0509fe0d6bfe93cbdfe17b8116ebc8eda86d45f6e16e819aaf \
-    --hash=sha256:f747949a8ddac876e879190df194b925c177cdeb725a099db1460872f7c0a7f2
+djangorestframework==3.13.0; python_version >= "3.6" \
+    --hash=sha256:48e64f08244fa0df9e2b8fbd405edec263d8e1251112a06d0073b546b7c86b9c \
+    --hash=sha256:8b987d5683f5b3553dd946d4972048d3117fc526cb0bc01a3f021e81af53f39e
 drf-access-policy==1.1.0 \
     --hash=sha256:6ccb77eb73dfcf485a497d0884cb3b1935e56715c208aa09581cf53c96ead9b5
 gunicorn==20.1.0; python_version >= "3.5" \
