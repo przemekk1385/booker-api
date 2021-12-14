@@ -50,15 +50,14 @@ class BookingSerializer(serializers.ModelSerializer):
                 }
             ) from e_info
 
-        if (
-            Booking.objects.filter(stay=stay)
-            .annotate(days_between=F("day") - day)
-            .filter(
-                Q(days_between__gte=timedelta(days=DAYS_BETWEEN_BOOKINGS))
-                | Q(days_between__lte=timedelta(days=-DAYS_BETWEEN_BOOKINGS))
-            )
-            .exists()
-        ):
+        blocked_days = [
+            day + timedelta(days=i)
+            for i in range(-DAYS_BETWEEN_BOOKINGS + 1, DAYS_BETWEEN_BOOKINGS)
+        ]
+        if Booking.objects.filter(
+            day__in=blocked_days,
+            stay=stay,
+        ).exists():
             msg = (
                 _("Booking is possible once per day.")
                 if DAYS_BETWEEN_BOOKINGS == 1

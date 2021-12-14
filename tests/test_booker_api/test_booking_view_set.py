@@ -27,9 +27,18 @@ def test_list(api_client, faker, stay_instance):
 
 
 @pytest.mark.django_db
-def test_create_ok(api_client, faker, stay_instance):
+def test_create_ok(api_client, faker, mocker, stay_instance):
+    mocker.patch.object(
+        apps.get_app_config("booker_api"), "days_between_bookings", new=1
+    )
+    Booking.objects.create(
+        stay=stay_instance,
+        day=date.today() + timedelta(days=1),
+        slot=faker.random_element(Booking.Slot),
+    )
+
     payload = {
-        "day": date.today() + timedelta(days=1),
+        "day": date.today(),
         "identifier": stay_instance.identifier,
         "slot": faker.random_element(Booking.Slot),
     }
@@ -81,7 +90,7 @@ def test_create_booking_not_possible(
     timedelta_days, api_client, faker, mocker, stay_instance
 ):
     mocker.patch.object(
-        apps.get_app_config("booker_api"), "days_between_bookings", new=1
+        apps.get_app_config("booker_api"), "days_between_bookings", new=2
     )
     Booking.objects.create(
         stay=stay_instance,
