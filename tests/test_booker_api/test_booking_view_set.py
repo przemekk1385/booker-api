@@ -11,19 +11,21 @@ from booker_api.models import Booking
 
 @pytest.mark.django_db
 def test_list(api_client, faker, stay_instance):
-    total_bookings = 3
+    stay_instance.date_from = stay_instance.date_from - timedelta(days=2)
+    stay_instance.save()
+    total_bookings = (stay_instance.date_to - stay_instance.date_from).days
 
     for i in range(total_bookings):
         Booking.objects.create(
             stay=stay_instance,
-            day=stay_instance.date_from + timedelta(days=i + 1),
+            day=stay_instance.date_from + timedelta(days=i),
             slot=faker.random_element(Booking.Slot),
         )
 
     response = api_client.get(reverse("booker_api:booking-list"))
 
     assert response.status_code == http.HTTPStatus.OK, response.json()
-    assert len(response.json()) == total_bookings
+    assert len(response.json()) == total_bookings - 1
 
 
 @pytest.mark.django_db
@@ -57,6 +59,20 @@ def test_create_ok(api_client, faker, mocker, stay_instance):
 def test_create_day_already_passed(api_client, faker, stay_instance):
     payload = {
         "day": date.today() - timedelta(days=99),
+        "identifier": stay_instance.identifier,
+        "slot": faker.random_element(Booking.Slot),
+    }
+
+    response = api_client.post(reverse("booker_api:booking-list"), payload)
+
+    assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
+    assert "day" in response.json().keys()
+
+
+@pytest.mark.django_db
+def test_create_last_day(api_client, faker, stay_instance):
+    payload = {
+        "day": stay_instance.date_to,
         "identifier": stay_instance.identifier,
         "slot": faker.random_element(Booking.Slot),
     }

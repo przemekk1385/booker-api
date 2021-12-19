@@ -34,10 +34,17 @@ class Stay(models.Model):
 
 class Booking(models.Model):
     class Slot(models.IntegerChoices):
-        FROM11 = 1, "11:00 - 11:50"
-        FROM12 = 2, "12:00 - 12:50"
-        FROM13 = 3, "13:00 - 13:50"
-        FROM14 = 4, "14:00 - 14:50"
+        FROM11 = 11, "11:00 - 11:50"
+        FROM12 = 12, "12:00 - 12:50"
+        FROM13 = 13, "13:00 - 13:50"
+        FROM14 = 14, "14:00 - 14:50"
+        FROM15 = 15, "15:00 - 15:50"
+        FROM16 = 16, "16:00 - 16:50"
+        FROM17 = 17, "17:00 - 17:50"
+        FROM18 = 18, "18:00 - 18:50"
+        FROM19 = 19, "19:00 - 19:50"
+        FROM20 = 20, "20:00 - 20:50"
+        FROM21 = 21, "21:00 - 21:50"
 
     class Meta:
         unique_together = ("day", "slot")

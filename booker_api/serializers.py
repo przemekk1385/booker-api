@@ -1,7 +1,6 @@
 from datetime import date, timedelta
 
 from django.apps import apps
-from django.db.models import ExpressionWrapper, F, Q, fields
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
@@ -64,6 +63,11 @@ class BookingSerializer(serializers.ModelSerializer):
                 else _(f"Booking is possible once per {days_between_bookings} days.")
             )
             raise serializers.ValidationError({"day": msg})
+
+        if day == stay.date_to:
+            raise serializers.ValidationError(
+                {"day": _("Cannot book for the last day of stay.")}
+            )
 
         attrs["stay"] = stay
         return attrs
