@@ -44,7 +44,7 @@ class BookingSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {
                     "identifier": _(
-                        f"There is no stay associated with identifier {identifier}."
+                        f"On {day} there is no stay with identifier {identifier}."
                     )
                 }
             ) from e_info
