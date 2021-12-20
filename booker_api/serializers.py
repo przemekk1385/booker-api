@@ -1,11 +1,12 @@
 from datetime import date, timedelta
 
 from django.apps import apps
-from django.db.models import ExpressionWrapper, F, Q, fields
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
+from rest_framework.settings import api_settings
 
 from booker_api.models import Booking, Stay
+from booker_api.utils import get_now
 
 
 class BookingSerializer(serializers.ModelSerializer):
@@ -36,6 +37,14 @@ class BookingSerializer(serializers.ModelSerializer):
 
         identifier = attrs.pop("identifier")
         day = attrs["day"]
+        slot = attrs["slot"]
+
+        now = get_now()
+
+        if day == now.date() and now.hour >= 20:
+            raise serializers.ValidationError(
+                {api_settings.NON_FIELD_ERRORS_KEY: _("Cannot book after 8 p.m.")}
+            )
 
         try:
             stay = Stay.objects.filter(date_from__lte=day, date_to__gte=day).get(
@@ -45,7 +54,7 @@ class BookingSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {
                     "identifier": _(
-                        f"There is no stay associated with identifier {identifier}."
+                        f"On {day} there is no stay with identifier {identifier}."
                     )
                 }
             ) from e_info
@@ -64,6 +73,16 @@ class BookingSerializer(serializers.ModelSerializer):
                 else _(f"Booking is possible once per {days_between_bookings} days.")
             )
             raise serializers.ValidationError({"day": msg})
+
+        if day == stay.date_to:
+            raise serializers.ValidationError(
+                {"day": _("Cannot book for the last day of stay.")}
+            )
+
+        if day == now.date() and slot <= now.hour:
+            raise serializers.ValidationError(
+                {"slot": _(f"{slot} o'clock has already passed")}
+            )
 
         attrs["stay"] = stay
         return attrs
