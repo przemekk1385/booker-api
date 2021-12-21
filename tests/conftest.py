@@ -4,7 +4,7 @@ from typing import Callable
 import pytest
 from rest_framework.test import APIClient
 
-from booker_api.models import Apartment, Stay
+from booker_api.models import Apartment, Booking, Stay
 from operator_api.models import User
 from tests.constants import STAY_DAYS
 
@@ -18,6 +18,15 @@ def api_client() -> APIClient:
 def authenticated_api_client(api_client, user_instance) -> APIClient:
     api_client.force_authenticate(user_instance)
     yield api_client
+
+
+@pytest.fixture
+def booking_instance(faker, stay_instance) -> Booking:
+    return Booking.objects.create(
+        stay=stay_instance,
+        day=stay_instance.date_from + timedelta(days=1),
+        slot=faker.random_element(Booking.Slot),
+    )
 
 
 @pytest.fixture

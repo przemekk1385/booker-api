@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.settings import api_settings
 
-from booker_api.models import Booking, Stay
+from booker_api.models import IDENTIFIER_MAX_LENGTH, Booking, Stay
 from booker_api.utils import get_now
 
 
@@ -13,7 +13,9 @@ class BookingSerializer(serializers.ModelSerializer):
     apartment = serializers.SerializerMethodField(read_only=True)
     slot_label = serializers.SerializerMethodField(read_only=True)
 
-    identifier = serializers.CharField(write_only=True)
+    identifier = serializers.CharField(
+        max_length=IDENTIFIER_MAX_LENGTH, write_only=True
+    )
 
     class Meta:
         fields = ("apartment", "day", "identifier", "slot", "slot_label")
