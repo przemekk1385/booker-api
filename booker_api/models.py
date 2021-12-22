@@ -1,5 +1,6 @@
-from django.contrib.auth.models import AbstractBaseUser
 from django.db import models
+
+IDENTIFIER_MAX_LENGTH = 9
 
 
 class Apartment(models.Model):
@@ -14,7 +15,7 @@ class Apartment(models.Model):
 
 class Stay(models.Model):
     apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
-    identifier = models.CharField(max_length=9)
+    identifier = models.CharField(max_length=IDENTIFIER_MAX_LENGTH)
     date_from = models.DateField()
     date_to = models.DateField()
 
