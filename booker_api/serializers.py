@@ -1,6 +1,7 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
 from django.apps import apps
+from django.utils.datetime_safe import date
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
@@ -36,9 +37,7 @@ class BookingSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         days_between_bookings = apps.get_app_config("booker_api").days_between_bookings
 
-        code = attrs["code"]
-        day = attrs["day"]
-        slot = attrs["slot"]
+        code, day, slot = attrs["code"], attrs["day"], attrs["slot"]
 
         now = get_now()
 

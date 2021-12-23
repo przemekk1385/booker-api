@@ -20,7 +20,7 @@ def test_list(apartment_instance, api_client, faker):
             slot=faker.random_element(Booking.Slot),
         )
 
-    response = api_client.get(reverse("booker_api:booking"))
+    response = api_client.get(reverse("booker_api:booking-list"))
 
     assert response.status_code == http.HTTPStatus.OK, response.json()
     assert len(response.json()) == total_bookings - 1
@@ -47,7 +47,7 @@ def test_create_ok(apartment_instance, api_client, faker, mocker):
         "slot": faker.random_element(Booking.Slot),
     }
 
-    response = api_client.post(reverse("booker_api:booking"), payload)
+    response = api_client.post(reverse("booker_api:booking-list"), payload)
 
     assert response.status_code == http.HTTPStatus.CREATED, response.json()
 
@@ -65,7 +65,7 @@ def test_create_day_already_passed(apartment_instance, api_client, faker):
         "slot": faker.random_element(Booking.Slot),
     }
 
-    response = api_client.post(reverse("booker_api:booking"), payload)
+    response = api_client.post(reverse("booker_api:booking-list"), payload)
 
     assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
     assert "day" in response.json().keys()
@@ -79,7 +79,7 @@ def test_create_no_code(api_client, faker):
         "slot": faker.random_element(Booking.Slot),
     }
 
-    response = api_client.post(reverse("booker_api:booking"), payload)
+    response = api_client.post(reverse("booker_api:booking-list"), payload)
 
     assert response.status_code == http.HTTPStatus.NOT_FOUND, response.json()
 
@@ -107,7 +107,7 @@ def test_create_booking_not_possible(
         "slot": faker.random_element(Booking.Slot),
     }
 
-    response = api_client.post(reverse("booker_api:booking"), payload)
+    response = api_client.post(reverse("booker_api:booking-list"), payload)
 
     assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
     assert "day" in response.json().keys()
@@ -121,7 +121,7 @@ def test_create_day_slot_exist(api_client, booking_instance):
         "slot": booking_instance.slot,
     }
 
-    response = api_client.post(reverse("booker_api:booking"), payload)
+    response = api_client.post(reverse("booker_api:booking-list"), payload)
 
     assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
     assert api_settings.NON_FIELD_ERRORS_KEY in response.json().keys()
@@ -144,7 +144,7 @@ def test_create_after_8_p_m(hour, apartment_instance, api_client, faker, mocker)
         "slot": faker.random_element(Booking.Slot),
     }
 
-    response = api_client.post(reverse("booker_api:booking"), payload)
+    response = api_client.post(reverse("booker_api:booking-list"), payload)
 
     assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
     assert api_settings.NON_FIELD_ERRORS_KEY in response.json().keys()
@@ -167,7 +167,7 @@ def test_create_hour_has_passed(hour, apartment_instance, api_client, mocker):
         "slot": hour - 1,
     }
 
-    response = api_client.post(reverse("booker_api:booking"), payload)
+    response = api_client.post(reverse("booker_api:booking-list"), payload)
 
     assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
     assert "slot" in response.json().keys()
@@ -180,7 +180,7 @@ def test_destroy_ok(api_client, booking_instance):
         "code": booking_instance.apartment.code,
     }
 
-    response = api_client.delete(reverse("booker_api:booking"), payload)
+    response = api_client.post(reverse("booker_api:booking-cancel"), payload)
 
     assert response.status_code == http.HTTPStatus.NO_CONTENT, response.json()
 
@@ -195,7 +195,7 @@ def test_destroy_ok(api_client, booking_instance):
 )
 @pytest.mark.django_db
 def test_destroy_bad_request(payload, error_in, api_client):
-    response = api_client.delete(reverse("booker_api:booking"), payload)
+    response = api_client.post(reverse("booker_api:booking-cancel"), payload)
 
     assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
     assert not error_in.difference(response.json().keys())
