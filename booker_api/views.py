@@ -6,21 +6,21 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from booker_api.models import IDENTIFIER_MAX_LENGTH, Booking
+from booker_api.models import Booking
 from booker_api.serializers import BookingSerializer, SlotSerializer
 
 
 class BookingDeleteRequest(serializers.Serializer):
+    code = serializers.CharField()
     day = serializers.DateField()
-    identifier = serializers.CharField(max_length=IDENTIFIER_MAX_LENGTH)
 
 
 class BookingView(views.APIView):
     serializer_class = BookingSerializer
 
-    def get_object(self, day: date, identifier: str) -> Booking:
+    def get_object(self, code: str, day: date) -> Booking:
         queryset = self.get_queryset()
-        obj = get_object_or_404(queryset, day=day, stay__identifier=identifier)
+        obj = get_object_or_404(queryset, apartment__code=code, day=day)
         return obj
 
     def get_queryset(self):

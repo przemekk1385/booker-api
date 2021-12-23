@@ -10,15 +10,13 @@ from booker_api.models import Booking
 
 
 @pytest.mark.django_db
-def test_list(api_client, faker, stay_instance):
-    stay_instance.date_from = stay_instance.date_from - timedelta(days=2)
-    stay_instance.save()
-    total_bookings = (stay_instance.date_to - stay_instance.date_from).days
+def test_list(apartment_instance, api_client, faker):
+    total_bookings = 7
 
     for i in range(total_bookings):
         Booking.objects.create(
-            stay=stay_instance,
-            day=stay_instance.date_from + timedelta(days=i),
+            apartment=apartment_instance,
+            day=date.today() + timedelta(days=i - 2),
             slot=faker.random_element(Booking.Slot),
         )
 
@@ -29,7 +27,7 @@ def test_list(api_client, faker, stay_instance):
 
 
 @pytest.mark.django_db
-def test_create_ok(api_client, faker, mocker, stay_instance):
+def test_create_ok(apartment_instance, api_client, faker, mocker):
     today = date.today()
     mocker.patch("booker_api.serializers.get_now").return_value = datetime(
         today.year, today.month, today.day, 10
@@ -38,14 +36,14 @@ def test_create_ok(api_client, faker, mocker, stay_instance):
         apps.get_app_config("booker_api"), "days_between_bookings", new=1
     )
     Booking.objects.create(
-        stay=stay_instance,
+        apartment=apartment_instance,
         day=date.today() + timedelta(days=1),
         slot=faker.random_element(Booking.Slot),
     )
 
     payload = {
+        "code": apartment_instance.code,
         "day": date.today(),
-        "identifier": stay_instance.identifier,
         "slot": faker.random_element(Booking.Slot),
     }
 
@@ -54,16 +52,16 @@ def test_create_ok(api_client, faker, mocker, stay_instance):
     assert response.status_code == http.HTTPStatus.CREATED, response.json()
 
     response_data = response.json()
-    assert response_data["apartment"] == stay_instance.apartment.label
+    assert response_data["apartment"] == apartment_instance.number
     assert response_data["slot"] == payload["slot"]
     assert response_data["slot_label"] == payload["slot"].label
 
 
 @pytest.mark.django_db
-def test_create_day_already_passed(api_client, faker, stay_instance):
+def test_create_day_already_passed(apartment_instance, api_client, faker):
     payload = {
+        "code": apartment_instance.code,
         "day": date.today() - timedelta(days=99),
-        "identifier": stay_instance.identifier,
         "slot": faker.random_element(Booking.Slot),
     }
 
@@ -74,31 +72,16 @@ def test_create_day_already_passed(api_client, faker, stay_instance):
 
 
 @pytest.mark.django_db
-def test_create_last_day(api_client, faker, stay_instance):
+def test_create_no_code(api_client, faker):
     payload = {
-        "day": stay_instance.date_to,
-        "identifier": stay_instance.identifier,
-        "slot": faker.random_element(Booking.Slot),
-    }
-
-    response = api_client.post(reverse("booker_api:booking"), payload)
-
-    assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
-    assert "day" in response.json().keys()
-
-
-@pytest.mark.django_db
-def test_create_no_stay(api_client, faker):
-    payload = {
+        "code": faker.numerify("####"),
         "day": date.today() + timedelta(days=1),
-        "identifier": faker.numerify("#########"),
         "slot": faker.random_element(Booking.Slot),
     }
 
     response = api_client.post(reverse("booker_api:booking"), payload)
 
-    assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
-    assert "identifier" in response.json().keys()
+    assert response.status_code == http.HTTPStatus.NOT_FOUND, response.json()
 
 
 @pytest.mark.parametrize(
@@ -107,20 +90,20 @@ def test_create_no_stay(api_client, faker):
 )
 @pytest.mark.django_db
 def test_create_booking_not_possible(
-    timedelta_days, api_client, faker, mocker, stay_instance
+    timedelta_days, apartment_instance, api_client, faker, mocker
 ):
     mocker.patch.object(
         apps.get_app_config("booker_api"), "days_between_bookings", new=2
     )
     Booking.objects.create(
-        stay=stay_instance,
+        apartment=apartment_instance,
         day=date.today() + timedelta(days=2),
         slot=faker.random_element(Booking.Slot),
     )
 
     payload = {
+        "code": apartment_instance.code,
         "day": date.today() + timedelta(days=timedelta_days),
-        "identifier": stay_instance.identifier,
         "slot": faker.random_element(Booking.Slot),
     }
 
@@ -133,8 +116,8 @@ def test_create_booking_not_possible(
 @pytest.mark.django_db
 def test_create_day_slot_exist(api_client, booking_instance):
     payload = {
+        "code": booking_instance.apartment.code,
         "day": booking_instance.day,
-        "identifier": booking_instance.stay.identifier,
         "slot": booking_instance.slot,
     }
 
@@ -149,15 +132,15 @@ def test_create_day_slot_exist(api_client, booking_instance):
     (20, 21, 22, 23),
 )
 @pytest.mark.django_db
-def test_create_after_8_p_m(hour, api_client, faker, mocker, stay_instance):
+def test_create_after_8_p_m(hour, apartment_instance, api_client, faker, mocker):
     today = date.today()
     mocker.patch("booker_api.serializers.get_now").return_value = datetime(
         today.year, today.month, today.day, hour
     )
 
     payload = {
+        "code": apartment_instance.code,
         "day": date.today(),
-        "identifier": stay_instance.identifier,
         "slot": faker.random_element(Booking.Slot),
     }
 
@@ -172,7 +155,7 @@ def test_create_after_8_p_m(hour, api_client, faker, mocker, stay_instance):
     (11, 12, 13, 14, 15, 16, 17, 18, 19),
 )
 @pytest.mark.django_db
-def test_create_hour_has_passed(hour, api_client, mocker, stay_instance):
+def test_create_hour_has_passed(hour, apartment_instance, api_client, mocker):
     today = date.today()
     mocker.patch("booker_api.serializers.get_now").return_value = datetime(
         today.year, today.month, today.day, hour
@@ -180,7 +163,7 @@ def test_create_hour_has_passed(hour, api_client, mocker, stay_instance):
 
     payload = {
         "day": date.today(),
-        "identifier": stay_instance.identifier,
+        "code": apartment_instance.code,
         "slot": hour - 1,
     }
 
@@ -194,7 +177,7 @@ def test_create_hour_has_passed(hour, api_client, mocker, stay_instance):
 def test_destroy_ok(api_client, booking_instance):
     payload = {
         "day": booking_instance.day,
-        "identifier": booking_instance.stay.identifier,
+        "code": booking_instance.apartment.code,
     }
 
     response = api_client.delete(reverse("booker_api:booking"), payload)
@@ -205,13 +188,13 @@ def test_destroy_ok(api_client, booking_instance):
 @pytest.mark.parametrize(
     "payload,error_in",
     (
-        ({}, {"day", "identifier"}),
-        ({"day": date.today()}, {"identifier"}),
-        ({"identifier": ""}, {"day"}),
+        ({}, {"code", "day"}),
+        ({"day": date.today()}, {"code"}),
+        ({"code": ""}, {"day"}),
     ),
 )
 @pytest.mark.django_db
-def test_destroy_bad_request(payload, error_in, api_client, booking_instance):
+def test_destroy_bad_request(payload, error_in, api_client):
     response = api_client.delete(reverse("booker_api:booking"), payload)
 
     assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
