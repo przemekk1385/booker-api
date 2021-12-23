@@ -4,6 +4,7 @@ from django.utils.datetime_safe import date
 from django.utils.translation import gettext_lazy as _
 from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -48,8 +49,16 @@ class BookingViewSet(
         instance = self.get_object()
 
         now = get_now()
-        if now.replace(hour=instance.slot - 1, minute=29, second=59) < now:
-            raise serializers.ValidationError(
+        deadline = now.replace(
+            year=instance.day.year,
+            month=instance.day.month,
+            day=instance.day.day,
+            hour=instance.slot - 1,
+            minute=29,
+            second=59,
+        )
+        if deadline < now:
+            raise ValidationError(
                 {
                     api_settings.NON_FIELD_ERRORS_KEY: _(
                         "Booking can be canceled up to 30 minutes before."

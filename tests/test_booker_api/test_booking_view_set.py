@@ -85,10 +85,7 @@ def test_create_no_code(api_client, faker):
     assert response.status_code == http.HTTPStatus.NOT_FOUND, response.json()
 
 
-@pytest.mark.parametrize(
-    "timedelta_days",
-    (1, 3),
-)
+@pytest.mark.parametrize("timedelta_days", (1, 3))
 @pytest.mark.django_db
 def test_create_booking_not_possible(
     timedelta_days, apartment_instance, api_client, faker, mocker
@@ -128,10 +125,7 @@ def test_create_day_slot_exist(api_client, booking_instance):
     assert api_settings.NON_FIELD_ERRORS_KEY in response.json().keys()
 
 
-@pytest.mark.parametrize(
-    "hour",
-    (20, 21),
-)
+@pytest.mark.parametrize("hour", (20, 21))
 @pytest.mark.django_db
 def test_create_after_8_p_m(hour, apartment_instance, api_client, faker, mocker):
     today = date.today()
@@ -151,10 +145,7 @@ def test_create_after_8_p_m(hour, apartment_instance, api_client, faker, mocker)
     assert api_settings.NON_FIELD_ERRORS_KEY in response.json().keys()
 
 
-@pytest.mark.parametrize(
-    "hour",
-    (11, 12, 13, 14, 15, 16, 17, 18, 19),
-)
+@pytest.mark.parametrize("hour", (11, 12, 13, 14, 15, 16, 17, 18, 19))
 @pytest.mark.django_db
 def test_create_hour_has_passed(hour, apartment_instance, api_client, mocker):
     today = date.today()
@@ -174,11 +165,14 @@ def test_create_hour_has_passed(hour, apartment_instance, api_client, mocker):
     assert "slot" in response.json().keys()
 
 
+@pytest.mark.parametrize("timedelta_days,hour", ((1, 22), (0, 10)))
 @pytest.mark.django_db
-def test_cancel_ok(api_client, booking_instance, mocker):
-    booking_day = booking_instance.day
+def test_cancel_day_before_ok(
+    hour, timedelta_days, api_client, booking_instance, mocker
+):
+    booking_day = booking_instance.day - timedelta(days=timedelta_days)
     mocker.patch("booker_api.viewsets.get_now").return_value = datetime(
-        booking_day.year, booking_day.month, booking_day.day, 10
+        booking_day.year, booking_day.month, booking_day.day, hour
     )
 
     payload = {
@@ -207,10 +201,7 @@ def test_cancel_bad_request(payload, error_in, api_client):
     assert not error_in.difference(response.json().keys())
 
 
-@pytest.mark.parametrize(
-    "hour",
-    (11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21),
-)
+@pytest.mark.parametrize("hour", (11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21))
 @pytest.mark.django_db
 def test_cancel_hour_has_passed(
     hour, apartment_instance, api_client, booking_instance, mocker
