@@ -7,6 +7,7 @@ from django.urls import reverse
 from rest_framework.settings import api_settings
 
 from booker_api.models import Booking
+from booker_api.utils import timezone
 
 
 @pytest.mark.django_db
@@ -30,8 +31,8 @@ def test_list(apartment_instance, api_client, faker):
 def test_create_ok(apartment_instance, api_client, faker, mocker):
     today = date.today()
     mocker.patch("booker_api.serializers.get_now").return_value = datetime(
-        today.year, today.month, today.day, 10
-    )
+        today.year, today.month, today.day, 9
+    ).astimezone(timezone)
     mocker.patch.object(
         apps.get_app_config("booker_api"), "days_between_bookings", new=1
     )
@@ -129,7 +130,7 @@ def test_create_day_slot_exist(api_client, booking_instance):
 
 @pytest.mark.parametrize(
     "hour",
-    (20, 21, 22, 23),
+    (20, 21),
 )
 @pytest.mark.django_db
 def test_create_after_8_p_m(hour, apartment_instance, api_client, faker, mocker):
@@ -174,7 +175,12 @@ def test_create_hour_has_passed(hour, apartment_instance, api_client, mocker):
 
 
 @pytest.mark.django_db
-def test_destroy_ok(api_client, booking_instance):
+def test_cancel_ok(api_client, booking_instance, mocker):
+    booking_day = booking_instance.day
+    mocker.patch("booker_api.viewsets.get_now").return_value = datetime(
+        booking_day.year, booking_day.month, booking_day.day, 10
+    )
+
     payload = {
         "day": booking_instance.day,
         "code": booking_instance.apartment.code,
@@ -194,8 +200,35 @@ def test_destroy_ok(api_client, booking_instance):
     ),
 )
 @pytest.mark.django_db
-def test_destroy_bad_request(payload, error_in, api_client):
+def test_cancel_bad_request(payload, error_in, api_client):
     response = api_client.post(reverse("booker_api:booking-cancel"), payload)
 
     assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
     assert not error_in.difference(response.json().keys())
+
+
+@pytest.mark.parametrize(
+    "hour",
+    (11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21),
+)
+@pytest.mark.django_db
+def test_cancel_hour_has_passed(
+    hour, apartment_instance, api_client, booking_instance, mocker
+):
+    booking_instance.slot = Booking.Slot(hour)
+    booking_instance.save()
+
+    booking_day = booking_instance.day
+    mocker.patch("booker_api.viewsets.get_now").return_value = datetime(
+        booking_day.year, booking_day.month, booking_day.day, hour - 1, 30
+    )
+
+    payload = {
+        "day": booking_instance.day,
+        "code": apartment_instance.code,
+    }
+
+    response = api_client.post(reverse("booker_api:booking-cancel"), payload)
+
+    assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
+    assert api_settings.NON_FIELD_ERRORS_KEY in response.json().keys()

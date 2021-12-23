@@ -41,7 +41,7 @@ class BookingSerializer(serializers.ModelSerializer):
 
         now = get_now()
 
-        if day == now.date() and now.hour >= 20:
+        if day == now.date() and now.hour in [20, 21]:
             raise serializers.ValidationError(
                 {api_settings.NON_FIELD_ERRORS_KEY: _("Cannot book after 8 p.m.")}
             )

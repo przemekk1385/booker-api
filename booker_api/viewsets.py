@@ -1,13 +1,16 @@
 from datetime import timedelta
 
 from django.utils.datetime_safe import date
+from django.utils.translation import gettext_lazy as _
 from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
+from rest_framework.settings import api_settings
 
 from booker_api.models import Booking
 from booker_api.serializers import BookingSerializer
+from booker_api.utils import get_now
 
 
 class BookingCancelRequest(serializers.Serializer):
@@ -43,5 +46,16 @@ class BookingViewSet(
         cancel_request.is_valid(raise_exception=True)
 
         instance = self.get_object()
+
+        now = get_now()
+        if now.replace(hour=instance.slot - 1, minute=29, second=59) < now:
+            raise serializers.ValidationError(
+                {
+                    api_settings.NON_FIELD_ERRORS_KEY: _(
+                        "Booking can be canceled up to 30 minutes before."
+                    )
+                }
+            )
+
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
