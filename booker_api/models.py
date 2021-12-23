@@ -1,36 +1,21 @@
 from django.db import models
-
-IDENTIFIER_MAX_LENGTH = 9
+from django.utils.translation import gettext as _
 
 
 class Apartment(models.Model):
-    label = models.CharField(max_length=20)
+    code = models.CharField(max_length=10, unique=True)
+    number = models.PositiveSmallIntegerField()
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} label={self.label}>"
+        return f"<{self.__class__.__name__} code={self.code} number={self.number}>"
 
     def __str__(self):
-        return self.label
+        return _(f"Apartment {self.number}")
 
-
-class Stay(models.Model):
-    apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
-    identifier = models.CharField(max_length=IDENTIFIER_MAX_LENGTH)
-    date_from = models.DateField()
-    date_to = models.DateField()
-
-    class Meta:
-        unique_together = ("apartment", "date_from", "date_to")
-
-    @property
-    def formatted_identifier(self):
-        return "-".join([self.identifier[i : i + 3] for i in range(0, 9, 3)])
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} apartment={self.apartment} identifier={self.identifier}>"
-
-    def __str__(self):
-        return f"{self.apartment} {self.formatted_identifier}"
+    def save(self, *args, **kwargs):
+        if not self.number:
+            self.number = self.pk + 1
+        super(Apartment, self).save(*args, **kwargs)
 
 
 class Booking(models.Model):
@@ -50,7 +35,7 @@ class Booking(models.Model):
     class Meta:
         unique_together = ("day", "slot")
 
-    stay = models.ForeignKey(Stay, on_delete=models.CASCADE)
+    apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
 
     day = models.DateField()
     slot = models.PositiveSmallIntegerField(choices=Slot.choices)
@@ -60,8 +45,10 @@ class Booking(models.Model):
             f"<{self.__class__.__name__}"
             f" day={self.day}"
             f" slot={self.get_slot_display()}"
-            f" identifier={self.stay.identifier}>"
+            f" apartment={self.apartment.number}>"
         )
 
     def __str__(self):
-        return f"{self.day} {self.get_slot_display()} {self.stay.formatted_identifier}"
+        return _(
+            f"{self.day} {self.get_slot_display()} Apartment {self.apartment.number}"
+        )

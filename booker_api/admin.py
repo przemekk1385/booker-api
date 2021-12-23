@@ -1,7 +1,11 @@
 from django.contrib import admin
 
-from booker_api.models import Apartment, Booking, Stay
+from booker_api.models import Apartment, Booking
 
-admin.site.register(Apartment)
 admin.site.register(Booking)
-admin.site.register(Stay)
+
+
+@admin.register(Apartment)
+class ApartmentAdmin(admin.ModelAdmin):
+    fields = ["code", "number"]
+    readonly_fields = ["number"]

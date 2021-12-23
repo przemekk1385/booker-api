@@ -1,65 +1,52 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
 from django.apps import apps
+from django.utils.datetime_safe import date
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
+from rest_framework.generics import get_object_or_404
 from rest_framework.settings import api_settings
 
-from booker_api.models import IDENTIFIER_MAX_LENGTH, Booking, Stay
+from booker_api.models import Apartment, Booking
 from booker_api.utils import get_now
 
 
 class BookingSerializer(serializers.ModelSerializer):
-    apartment = serializers.SerializerMethodField(read_only=True)
+    apartment = serializers.SlugRelatedField("number", read_only=True)
     slot_label = serializers.SerializerMethodField(read_only=True)
 
-    identifier = serializers.CharField(
-        max_length=IDENTIFIER_MAX_LENGTH, write_only=True
-    )
+    code = serializers.CharField(write_only=True)
 
     class Meta:
-        fields = ("apartment", "day", "identifier", "slot", "slot_label")
+        fields = ("apartment", "code", "day", "slot", "slot_label")
         model = Booking
 
     def create(self, validated_data):
+        apartment = get_object_or_404(Apartment, code=validated_data["code"])
+
         return Booking.objects.create(
-            stay=validated_data["stay"],
+            apartment=apartment,
             day=validated_data["day"],
             slot=validated_data["slot"],
         )
 
-    def get_apartment(self, obj):
-        return obj.stay.apartment.label
-
-    def get_slot_label(self, obj):
+    @staticmethod
+    def get_slot_label(obj):
         return obj.get_slot_display()
 
     def validate(self, attrs):
         days_between_bookings = apps.get_app_config("booker_api").days_between_bookings
 
-        identifier = attrs.pop("identifier")
-        day = attrs["day"]
-        slot = attrs["slot"]
+        code, day, slot = attrs["code"], attrs["day"], attrs["slot"]
 
         now = get_now()
 
-        if day == now.date() and now.hour >= 20:
+        if day == now.date() and now.hour in [20, 21]:
             raise serializers.ValidationError(
                 {api_settings.NON_FIELD_ERRORS_KEY: _("Cannot book after 8 p.m.")}
             )
 
-        try:
-            stay = Stay.objects.filter(date_from__lte=day, date_to__gte=day).get(
-                identifier=identifier
-            )
-        except Stay.DoesNotExist as e_info:
-            raise serializers.ValidationError(
-                {
-                    "identifier": _(
-                        f"On {day} there is no stay with identifier {identifier}."
-                    )
-                }
-            ) from e_info
+        apartment = get_object_or_404(Apartment, code=code)
 
         blocked_days = [
             day + timedelta(days=i)
@@ -67,7 +54,7 @@ class BookingSerializer(serializers.ModelSerializer):
         ]
         if Booking.objects.filter(
             day__in=blocked_days,
-            stay=stay,
+            apartment=apartment,
         ).exists():
             msg = (
                 _("Booking is possible once per day.")
@@ -76,17 +63,11 @@ class BookingSerializer(serializers.ModelSerializer):
             )
             raise serializers.ValidationError({"day": msg})
 
-        if day == stay.date_to:
-            raise serializers.ValidationError(
-                {"day": _("Cannot book for the last day of stay.")}
-            )
-
         if day == now.date() and slot <= now.hour:
             raise serializers.ValidationError(
                 {"slot": _(f"{slot} o'clock has already passed")}
             )
 
-        attrs["stay"] = stay
         return attrs
 
     def validate_day(self, val):
@@ -97,15 +78,6 @@ class BookingSerializer(serializers.ModelSerializer):
 
 
 class SlotSerializer(serializers.BaseSerializer):
-    def create(self, validated_data):
-        raise NotImplementedError("SlotSerializer is read-only.")
-
-    def update(self, instance, validated_data):
-        raise NotImplementedError("SlotSerializer is read-only.")
-
-    def to_internal_value(self, data):
-        raise NotImplementedError("SlotSerializer is read-only.")
-
     def to_representation(self, instance):
         return {
             "label": instance.label,

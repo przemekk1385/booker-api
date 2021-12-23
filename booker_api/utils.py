@@ -1,6 +1,5 @@
-from datetime import datetime
-
 import pytz
+from django.utils.datetime_safe import datetime
 
 timezone = pytz.timezone("Europe/Warsaw")
 
