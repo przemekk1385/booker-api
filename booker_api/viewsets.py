@@ -54,9 +54,10 @@ class BookingViewSet(
             month=instance.day.month,
             day=instance.day.day,
             hour=instance.slot - 1,
-            minute=29,
-            second=59,
-        )
+            minute=30,
+            second=0,
+            microsecond=0,
+        ) - timedelta(microseconds=1)
         if deadline < now:
             raise ValidationError(
                 {
