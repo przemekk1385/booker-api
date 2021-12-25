@@ -49,16 +49,19 @@ class BookingViewSet(
         instance = self.get_object()
 
         now = get_now()
-        deadline = now.replace(
-            year=instance.day.year,
-            month=instance.day.month,
-            day=instance.day.day,
-            hour=instance.slot - 1,
-            minute=30,
-            second=0,
-            microsecond=0,
-        ) - timedelta(microseconds=1)
-        if deadline < now:
+        deadline = (
+            now.replace(
+                year=instance.day.year,
+                month=instance.day.month,
+                day=instance.day.day,
+                hour=instance.slot - 1,
+                minute=30,
+                second=0,
+                microsecond=0,
+            )
+            - timedelta(microseconds=1)
+        )
+        if now > deadline:
             raise ValidationError(
                 {
                     api_settings.NON_FIELD_ERRORS_KEY: _(
