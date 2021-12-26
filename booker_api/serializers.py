@@ -65,7 +65,7 @@ class BookingSerializer(serializers.ModelSerializer):
 
         if day == now.date() and slot <= now.hour:
             raise serializers.ValidationError(
-                {"slot": _(f"{slot} o'clock has already passed")}
+                {"slot": _(f"{slot} o'clock has already passed.")}
             )
 
         return attrs
