@@ -1,3 +1,6 @@
+compilemessages:
+	doppler run -- ./manage.py compilemessages
+
 createsuperuser:
 	doppler run -- ./manage.py createsuperuser
 
