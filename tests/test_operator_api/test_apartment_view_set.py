@@ -89,13 +89,49 @@ def test_update_not_is_operator(
 
 
 @pytest.mark.django_db
-def test_delete_method_not_allowed(
-    apartment_instance, authenticated_api_client, user_instance
-):
+def test_delete_forbidden(apartment_instance, authenticated_api_client, user_instance):
     user_instance.apartments.remove(apartment_instance)
 
     response = authenticated_api_client.delete(
         reverse("operator_api:apartment-detail", args=[apartment_instance.id])
+    )
+
+    assert response.status_code == http.HTTPStatus.FORBIDDEN, response.json()
+
+
+@pytest.mark.django_db
+def test_delete_method_not_allowed(
+    apartment_instance, authenticated_api_client, user_instance
+):
+    response = authenticated_api_client.delete(
+        reverse("operator_api:apartment-detail", args=[apartment_instance.id])
+    )
+
+    assert response.status_code == http.HTTPStatus.METHOD_NOT_ALLOWED, response.json()
+
+
+@pytest.mark.django_db
+def test_refresh_code_ok(apartment_instance, authenticated_api_client):
+    prev_code = apartment_instance.code = apartment_instance.code
+
+    response = authenticated_api_client.post(
+        reverse("operator_api:apartment-refresh-code", args=[apartment_instance.id])
+    )
+
+    assert response.status_code == http.HTTPStatus.OK, response.json()
+
+    response_data = response.json()
+    assert prev_code != response_data["code"]
+
+
+@pytest.mark.django_db
+def test_refresh_code_forbidden(
+    apartment_instance, authenticated_api_client, user_instance
+):
+    user_instance.apartments.remove(apartment_instance)
+
+    response = authenticated_api_client.post(
+        reverse("operator_api:apartment-refresh-code", args=[apartment_instance.id])
     )
 
     assert response.status_code == http.HTTPStatus.FORBIDDEN, response.json()
