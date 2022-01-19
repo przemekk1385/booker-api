@@ -3,8 +3,12 @@ from django.utils.translation import gettext as _
 
 
 class Apartment(models.Model):
-    code = models.CharField(max_length=10, unique=True)
-    number = models.PositiveSmallIntegerField()
+    class Meta:
+        verbose_name = _("apartment")
+        verbose_name_plural = _("apartments")
+
+    code = models.CharField(max_length=10, unique=True, verbose_name=_("code"))
+    number = models.PositiveSmallIntegerField(verbose_name=_("number"))
 
     def __repr__(self):
         return f"<{self.__class__.__name__} code={self.code} number={self.number}>"
@@ -34,11 +38,18 @@ class Booking(models.Model):
 
     class Meta:
         unique_together = ("day", "slot")
+        verbose_name = _("booking")
+        verbose_name_plural = _("bookings")
+        ordering = ("-day", "slot")
 
-    apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
+    apartment = models.ForeignKey(
+        Apartment, on_delete=models.CASCADE, verbose_name=_("apartment")
+    )
 
-    day = models.DateField()
-    slot = models.PositiveSmallIntegerField(choices=Slot.choices)
+    day = models.DateField(verbose_name=_("day"))
+    slot = models.PositiveSmallIntegerField(
+        choices=Slot.choices, verbose_name=_("slot")
+    )
 
     def __repr__(self):
         return (
