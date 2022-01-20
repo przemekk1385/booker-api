@@ -92,10 +92,10 @@ WSGI_APPLICATION = "booker.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-if env("DATABASE_URL"):
-    DATABASES = {"default": dj_database_url.config()}
-else:
-    DATABASES = {
+DATABASES = (
+    {"default": dj_database_url.config()}
+    if env("DATABASE_URL")
+    else {
         "default": {
             "ENGINE": "django.db.backends.postgresql_psycopg2",
             "NAME": env("POSTGRES_DB"),
@@ -105,6 +105,7 @@ else:
             "PORT": "5432",
         }
     }
+)
 
 
 # Password validation
@@ -141,6 +142,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+DATE_FORMAT = "Y-m-d"
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -169,6 +172,11 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
     ],
+    **(
+        {"DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",)}
+        if not DEBUG
+        else {}
+    ),
 }
 
 

@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from django.apps import apps
 from django.utils.datetime_safe import date
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 from rest_framework.settings import api_settings
@@ -59,20 +59,24 @@ class BookingSerializer(serializers.ModelSerializer):
             msg = (
                 _("Booking is possible once per day.")
                 if days_between_bookings == 1
-                else _(f"Booking is possible once per {days_between_bookings} days.")
+                else _("Booking is possible once per %(days)s days.")
+                % {"days": days_between_bookings}
             )
+
             raise serializers.ValidationError({"day": msg})
 
         if day == now.date() and slot <= now.hour:
             raise serializers.ValidationError(
-                {"slot": _(f"{slot} o'clock has already passed.")}
+                {"slot": _("%(hour)s o'clock has already passed.") % {"hour": slot}}
             )
 
         return attrs
 
     def validate_day(self, val):
         if val < date.today():
-            raise serializers.ValidationError(_(f"{val} already passed."))
+            raise serializers.ValidationError(
+                _("%(day)s already passed.") % {"day": val}
+            )
 
         return val
 
