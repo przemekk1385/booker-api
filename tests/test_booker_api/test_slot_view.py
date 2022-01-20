@@ -11,4 +11,4 @@ def test_list_ok(authenticated_api_client):
     response = authenticated_api_client.get(reverse("booker_api:slot-list"))
 
     assert response.status_code == http.HTTPStatus.OK, response.json()
-    assert len(response.json()) == len(Booking.Slot)
+    assert len(response.json()) == len(Booking.Slot.choices)

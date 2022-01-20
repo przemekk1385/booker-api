@@ -1,11 +1,9 @@
 import http
-from datetime import date, timedelta
 
 import pytest
 from django.urls import reverse
 
 from booker_api.models import Apartment
-from tests import constants
 
 
 @pytest.mark.django_db
