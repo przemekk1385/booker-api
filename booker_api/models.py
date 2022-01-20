@@ -1,20 +1,20 @@
 from django.db import models
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext, gettext_lazy
 
 
 class Apartment(models.Model):
     class Meta:
-        verbose_name = _("apartment")
-        verbose_name_plural = _("apartments")
+        verbose_name = gettext_lazy("apartment")
+        verbose_name_plural = gettext_lazy("apartments")
 
-    code = models.CharField(max_length=10, unique=True, verbose_name=_("code"))
-    number = models.PositiveSmallIntegerField(verbose_name=_("number"))
+    code = models.CharField(gettext_lazy("code"), max_length=10, unique=True)
+    number = models.PositiveSmallIntegerField(gettext_lazy("number"))
 
     def __repr__(self):
         return f"<{self.__class__.__name__} code={self.code} number={self.number}>"
 
     def __str__(self):
-        return _(f"Apartment {self.number}")
+        return gettext("Apartment %(number)s" % {"number": self.number})
 
     def save(self, *args, **kwargs):
         if not self.number:
@@ -38,18 +38,16 @@ class Booking(models.Model):
 
     class Meta:
         unique_together = ("day", "slot")
-        verbose_name = _("booking")
-        verbose_name_plural = _("bookings")
+        verbose_name = gettext_lazy("booking")
+        verbose_name_plural = gettext_lazy("bookings")
         ordering = ("-day", "slot")
 
     apartment = models.ForeignKey(
-        Apartment, on_delete=models.CASCADE, verbose_name=_("apartment")
+        Apartment, on_delete=models.CASCADE, verbose_name=gettext_lazy("apartment")
     )
 
-    day = models.DateField(verbose_name=_("day"))
-    slot = models.PositiveSmallIntegerField(
-        choices=Slot.choices, verbose_name=_("slot")
-    )
+    day = models.DateField(gettext_lazy("day"))
+    slot = models.PositiveSmallIntegerField(gettext_lazy("slot"), choices=Slot.choices)
 
     def __repr__(self):
         return (
@@ -60,6 +58,8 @@ class Booking(models.Model):
         )
 
     def __str__(self):
-        return _(
-            f"{self.day} {self.get_slot_display()} Apartment {self.apartment.number}"
-        )
+        return gettext("%(day)s %(slot)s Apartment %(number)s") % {
+            "day": self.day,
+            "slot": self.get_slot_display(),
+            "number": self.apartment.number,
+        }

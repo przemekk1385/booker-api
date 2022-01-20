@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.utils.datetime_safe import date
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError

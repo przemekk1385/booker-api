@@ -4,6 +4,9 @@ compilemessages:
 createsuperuser:
 	doppler run -- ./manage.py createsuperuser
 
+makemessages:
+	doppler run -- ./manage.py makemessages
+
 makemigrations:
 	doppler run -- ./manage.py makemigrations
 
