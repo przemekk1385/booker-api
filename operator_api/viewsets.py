@@ -31,7 +31,6 @@ class ApartmentAccessPolicy(AccessPolicy):
 class ApartmentViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
     viewsets.GenericViewSet,
 ):
     queryset = Apartment.objects.all()
