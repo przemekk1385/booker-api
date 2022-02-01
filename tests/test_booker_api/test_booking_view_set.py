@@ -55,7 +55,6 @@ def test_create_ok(apartment_instance, api_client, faker, mocker):
     response_data = response.json()
     assert response_data["apartment"] == apartment_instance.number
     assert response_data["slot"] == payload["slot"]
-    assert response_data["slot_label"] == payload["slot"].label
 
 
 @pytest.mark.django_db
