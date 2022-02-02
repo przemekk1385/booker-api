@@ -94,7 +94,7 @@ def test_delete_method_not_allowed(
 
 @pytest.mark.django_db
 def test_refresh_code_ok(apartment_instance, authenticated_api_client):
-    prev_code = apartment_instance.code = apartment_instance.code
+    prev_code = apartment_instance.code
 
     response = authenticated_api_client.post(
         reverse("operator_api:apartment-refresh-code", args=[apartment_instance.id])
