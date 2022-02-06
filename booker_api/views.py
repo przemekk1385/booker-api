@@ -7,7 +7,7 @@ from booker_api.serializers import SlotSerializer
 
 
 @api_view(["GET"])
-def health_status(request):
+def health(request):
     return Response({}, status=status.HTTP_200_OK)
 
 

@@ -13,12 +13,11 @@ from booker_api.utils import get_now
 
 class BookingSerializer(serializers.ModelSerializer):
     apartment = serializers.SlugRelatedField("number", read_only=True)
-    slot_label = serializers.SerializerMethodField(read_only=True)
 
     code = serializers.CharField(write_only=True)
 
     class Meta:
-        fields = ("apartment", "code", "day", "slot", "slot_label")
+        fields = ("apartment", "code", "day", "slot")
         model = Booking
 
     def create(self, validated_data):
