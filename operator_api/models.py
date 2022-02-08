@@ -2,7 +2,7 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
-from django.utils.translation import gettext_lazy
+from django.utils.translation import gettext_lazy as _
 
 from booker_api.models import Apartment
 
@@ -36,25 +36,23 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(gettext_lazy("email address"), unique=True)
+    email = models.EmailField(_("email address"), unique=True)
     is_staff = models.BooleanField(
-        gettext_lazy("staff status"),
+        _("staff status"),
         default=False,
-        help_text=gettext_lazy(
-            "Designates whether the user can log into this admin site."
-        ),
+        help_text=_("Designates whether the user can log into this admin site."),
     )
     is_active = models.BooleanField(
-        gettext_lazy("active"),
+        _("active"),
         default=True,
-        help_text=gettext_lazy(
+        help_text=_(
             "Designates whether this user should be treated as active. "
             "Unselect this instead of deleting accounts."
         ),
     )
 
     apartments = models.ManyToManyField(
-        Apartment, related_name="operators", verbose_name=gettext_lazy("apartments")
+        Apartment, related_name="operators", verbose_name=_("apartments")
     )
 
     objects = UserManager()
@@ -64,8 +62,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = []
 
     class Meta:
-        verbose_name = gettext_lazy("user")
-        verbose_name_plural = gettext_lazy("users")
+        verbose_name = _("user")
+        verbose_name_plural = _("users")
 
     def __repr__(self):
         return f"<{self.__class__.__name__} email={self.get_username()}>"
