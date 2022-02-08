@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from booker_api.models import Apartment
+from booker_api.models import Apartment, Booking
 
 
 class ApartmentSerializer(serializers.ModelSerializer):
@@ -11,3 +11,11 @@ class ApartmentSerializer(serializers.ModelSerializer):
     class Meta:
         fields = "__all__"
         model = Apartment
+
+
+class BookingSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        fields = ("id", "apartment", "day", "slot")
+        model = Booking
