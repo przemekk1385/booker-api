@@ -1,12 +1,14 @@
+from datetime import date, timedelta
+
 from rest_access_policy import AccessPolicy
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
-from booker_api.models import Apartment
+from booker_api.models import Apartment, Booking
 from booker_api.utils import make_code
-from operator_api.serializers import ApartmentSerializer
+from operator_api.serializers import ApartmentSerializer, BookingSerializer
 
 
 class ApartmentAccessPolicy(AccessPolicy):
@@ -51,3 +53,21 @@ class ApartmentViewSet(
         instance.save()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+
+
+class BookingAccessPolicy(AccessPolicy):
+    statements = [
+        {
+            "action": ["*"],
+            "principal": ["group:booking"],
+            "effect": "allow",
+        },
+    ]
+
+
+class BookingViewset(viewsets.ModelViewSet):
+    permission_classes = (BookingAccessPolicy,)
+    serializer_class = BookingSerializer
+
+    def get_queryset(self):
+        return Booking.objects.filter(day__gte=date.today() - timedelta(days=1))
