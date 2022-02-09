@@ -16,11 +16,12 @@ import dj_database_url
 import environ
 
 env = environ.Env(
-    DATABASE_URL=(str, None),
-    DEBUG=(bool, False),
     ALLOWED_HOSTS=(list, ["localhost", "127.0.0.1"]),
     CORS_ORIGIN_WHITELIST=(list, []),
+    DEBUG=(bool, False),
+    POSTGRES_CONFIG_VAR=(str, "DATABASE_URL"),
 )
+POSTGRES_CONFIG_VAR = env("POSTGRES_CONFIG_VAR")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -94,7 +95,7 @@ WSGI_APPLICATION = "booker.wsgi.application"
 
 DATABASES = (
     {"default": dj_database_url.config()}
-    if env("DATABASE_URL")
+    if env(POSTGRES_CONFIG_VAR)
     else {
         "default": {
             "ENGINE": "django.db.backends.postgresql_psycopg2",
