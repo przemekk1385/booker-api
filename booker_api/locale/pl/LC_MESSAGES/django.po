@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-20 19:23+0100\n"
+"POT-Creation-Date: 2022-02-09 08:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,71 +20,71 @@ msgstr ""
 "%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n"
 "%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 
-#: booker_api/models.py:7 booker_api/models.py:46
+#: models.py:7 models.py:46
 msgid "apartment"
 msgstr "apartament"
 
-#: booker_api/models.py:8
+#: models.py:8
 msgid "apartments"
 msgstr "apartamenty"
 
-#: booker_api/models.py:10
+#: models.py:10
 msgid "code"
 msgstr "kod"
 
-#: booker_api/models.py:11
+#: models.py:11
 msgid "number"
 msgstr "numer"
 
-#: booker_api/models.py:17
+#: models.py:17
 #, python-format
 msgid "Apartment %(number)s"
 msgstr "Apartament %(number)s"
 
-#: booker_api/models.py:41
+#: models.py:41
 msgid "booking"
 msgstr "rezerwacja"
 
-#: booker_api/models.py:42
+#: models.py:42
 msgid "bookings"
 msgstr "rezerwacje"
 
-#: booker_api/models.py:49
+#: models.py:49
 msgid "day"
 msgstr "dzień"
 
-#: booker_api/models.py:50
+#: models.py:50
 msgid "slot"
 msgstr "slot"
 
-#: booker_api/models.py:61
+#: models.py:61
 #, python-format
 msgid "%(day)s %(slot)s Apartment %(number)s"
 msgstr "%(day)s %(slot)s Apartament %(number)s"
 
-#: booker_api/serializers.py:46
-msgid "Cannot book after 8 p.m."
-msgstr "Nie można rezerwować po 20:00."
-
-#: booker_api/serializers.py:60
+#: serializers.py:54
 msgid "Booking is possible once per day."
 msgstr "Rezerwacja jest możliwa raz dziennie."
 
-#: booker_api/serializers.py:62
+#: serializers.py:56
 #, python-format
 msgid "Booking is possible once per %(days)s days."
 msgstr "Rezerwacja jest możliwa raz na %(days)s dni."
 
-#: booker_api/serializers.py:70
+#: serializers.py:64
 #, python-format
 msgid "%(hour)s o'clock has already passed."
 msgstr "%(hour)s już minęła."
 
-#: booker_api/serializers.py:78
+#: serializers.py:72
 #, python-format
 msgid "%(day)s already passed."
 msgstr "%(day)s już minął."
 
-#: booker_api/viewsets.py:68
+#: serializers.py:80
+msgid "Cannot book after 8 p.m."
+msgstr "Nie można rezerwować po 20:00."
+
+#: viewsets.py:68
 msgid "Booking can be canceled up to 30 minutes before."
 msgstr "Rezerwację można anulować do 30 minut przed terminem."

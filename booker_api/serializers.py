@@ -5,7 +5,6 @@ from django.utils.datetime_safe import date
 from django.utils.translation import gettext as _
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
-from rest_framework.settings import api_settings
 
 from booker_api.models import Apartment, Booking
 from booker_api.utils import get_now
@@ -39,11 +38,6 @@ class BookingSerializer(serializers.ModelSerializer):
         code, day, slot = attrs["code"], attrs["day"], attrs["slot"]
 
         now = get_now()
-
-        if day == now.date() and now.hour in [20, 21]:
-            raise serializers.ValidationError(
-                {api_settings.NON_FIELD_ERRORS_KEY: _("Cannot book after 8 p.m.")}
-            )
 
         apartment = get_object_or_404(Apartment, code=code)
 
@@ -79,6 +73,12 @@ class BookingSerializer(serializers.ModelSerializer):
 
         return val
 
+    def validate_slot(self, val):
+        if val in [20, 21]:
+            raise serializers.ValidationError(_("Cannot book after 8 p.m."))
+
+        return val
+
 
 class SlotSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
@@ -86,4 +86,5 @@ class SlotSerializer(serializers.BaseSerializer):
             "label": instance.label,
             "name": instance.name,
             "value": instance.value,
+            "is_off": instance.value in [20, 21],
         }
