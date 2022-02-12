@@ -55,7 +55,6 @@ def test_create_ok(apartment_instance, api_client, faker, mocker):
     response_data = response.json()
     assert response_data["apartment"] == apartment_instance.number
     assert response_data["slot"] == payload["slot"]
-    assert response_data["slot_label"] == payload["slot"].label
 
 
 @pytest.mark.django_db
@@ -125,24 +124,19 @@ def test_create_day_slot_exist(api_client, booking_instance):
     assert api_settings.NON_FIELD_ERRORS_KEY in response.json().keys()
 
 
-@pytest.mark.parametrize("hour", (20, 21))
+@pytest.mark.parametrize("slot", (20, 21))
 @pytest.mark.django_db
-def test_create_after_8_p_m(hour, apartment_instance, api_client, faker, mocker):
-    today = date.today()
-    mocker.patch("booker_api.serializers.get_now").return_value = datetime(
-        today.year, today.month, today.day, hour
-    )
-
+def test_create_after_8_p_m(slot, apartment_instance, api_client, faker, mocker):
     payload = {
         "code": apartment_instance.code,
         "day": date.today(),
-        "slot": faker.random_element(Booking.Slot),
+        "slot": slot,
     }
 
     response = api_client.post(reverse("booker_api:booking-list"), payload)
 
     assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
-    assert api_settings.NON_FIELD_ERRORS_KEY in response.json().keys()
+    assert "slot" in response.json().keys()
 
 
 @pytest.mark.parametrize("hour", (11, 12, 13, 14, 15, 16, 17, 18, 19))
