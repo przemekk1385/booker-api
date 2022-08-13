@@ -31,7 +31,7 @@ def test_list(apartment_instance, api_client, faker):
 def test_create_ok(apartment_instance, api_client, faker, mocker):
     today = date.today()
     mocker.patch("booker_api.serializers.get_now").return_value = datetime(
-        today.year, today.month, today.day, 9
+        today.year, today.month, today.day, 0
     ).astimezone(timezone)
     mocker.patch.object(
         apps.get_app_config("booker_api"), "days_between_bookings", new=1
