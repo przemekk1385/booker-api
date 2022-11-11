@@ -16,10 +16,11 @@ import dj_database_url
 import environ
 
 env = environ.Env(
-    DATABASE_URL=(str, None),
-    DEBUG=(bool, False),
     ALLOWED_HOSTS=(list, ["localhost", "127.0.0.1"]),
     CORS_ORIGIN_WHITELIST=(list, []),
+    DATABASE_URL=(str, None),
+    DEBUG=(bool, False),
+    POSTGRES_HOST=(str, "localhost"),
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -101,7 +102,7 @@ DATABASES = (
             "NAME": env("POSTGRES_DB"),
             "USER": env("POSTGRES_USER"),
             "PASSWORD": env("POSTGRES_PASSWORD"),
-            "HOST": "localhost",
+            "HOST": env("POSTGRES_HOST"),
             "PORT": "5432",
         }
     }
