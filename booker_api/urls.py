@@ -10,6 +10,6 @@ app_name = AppConfig.name
 
 urlpatterns = [
     path(f"{API_VERSION_PREFIX}/", include(router.urls)),
-    re_path(fr"^{API_VERSION_PREFIX}/slot/$", views.slot_list, name="slot-list"),
-    re_path(fr"^{API_VERSION_PREFIX}/health/$", views.health, name="health"),
+    re_path(rf"^{API_VERSION_PREFIX}/slot/$", views.slot_list, name="slot-list"),
+    re_path(rf"^{API_VERSION_PREFIX}/health/$", views.health, name="health"),
 ]
