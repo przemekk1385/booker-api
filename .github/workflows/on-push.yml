@@ -5,22 +5,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      - uses: snok/install-poetry@v1
-      - run:
-          name: 'Build'
-          command: >-
-            poetry install --no-root
-      - run:
-          name: 'Lint'
-          command: >-
-            poetry run black . --check
-            poetry run isort . --check
-            poetry run flake8 .
-            poetry run pytest
-      - run:
-          name: 'Test'
-          command: >-
-            poetry run pytest
+      - name: Install Poetry ${{ matrix.poetry-version }}
+        uses: snok/install-poetry@v1
+      - name: 'Build'
+        run: >-
+          poetry install --no-root
+      - name: 'Lint'
+        run: >-
+          poetry run black . --check
+          poetry run isort . --check
+          poetry run flake8 .
+          poetry run pytest
+      - name: 'Test'
+        run: >-
+          poetry run pytest
