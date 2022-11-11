@@ -1,9 +1,9 @@
-import http
 from datetime import date, datetime, timedelta
 
 import pytest
 from django.apps import apps
 from django.urls import reverse
+from rest_framework import status
 from rest_framework.settings import api_settings
 
 from booker_api.models import Booking
@@ -23,7 +23,7 @@ def test_list(apartment_instance, api_client, faker):
 
     response = api_client.get(reverse("booker_api:booking-list"))
 
-    assert response.status_code == http.HTTPStatus.OK, response.json()
+    assert response.status_code == status.HTTP_200_OK, response.json()
     assert len(response.json()) == total_bookings - 1
 
 
@@ -50,7 +50,7 @@ def test_create_ok(apartment_instance, api_client, faker, mocker):
 
     response = api_client.post(reverse("booker_api:booking-list"), payload)
 
-    assert response.status_code == http.HTTPStatus.CREATED, response.json()
+    assert response.status_code == status.HTTP_201_CREATED, response.json()
 
     response_data = response.json()
     assert response_data["apartment"] == apartment_instance.number
@@ -67,7 +67,7 @@ def test_create_day_already_passed(apartment_instance, api_client, faker):
 
     response = api_client.post(reverse("booker_api:booking-list"), payload)
 
-    assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
+    assert response.status_code == status.HTTP_400_BAD_REQUEST, response.json()
     assert "day" in response.json().keys()
 
 
@@ -81,7 +81,7 @@ def test_create_no_code(api_client, faker):
 
     response = api_client.post(reverse("booker_api:booking-list"), payload)
 
-    assert response.status_code == http.HTTPStatus.NOT_FOUND, response.json()
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.json()
 
 
 @pytest.mark.parametrize("timedelta_days", (1, 3))
@@ -106,7 +106,7 @@ def test_create_booking_not_possible(
 
     response = api_client.post(reverse("booker_api:booking-list"), payload)
 
-    assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
+    assert response.status_code == status.HTTP_400_BAD_REQUEST, response.json()
     assert "day" in response.json().keys()
 
 
@@ -120,7 +120,7 @@ def test_create_day_slot_exist(api_client, booking_instance):
 
     response = api_client.post(reverse("booker_api:booking-list"), payload)
 
-    assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
+    assert response.status_code == status.HTTP_400_BAD_REQUEST, response.json()
     assert api_settings.NON_FIELD_ERRORS_KEY in response.json().keys()
 
 
@@ -135,7 +135,7 @@ def test_create_after_8_p_m(slot, apartment_instance, api_client, faker, mocker)
 
     response = api_client.post(reverse("booker_api:booking-list"), payload)
 
-    assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
+    assert response.status_code == status.HTTP_400_BAD_REQUEST, response.json()
     assert "slot" in response.json().keys()
 
 
@@ -155,7 +155,7 @@ def test_create_hour_has_passed(hour, apartment_instance, api_client, mocker):
 
     response = api_client.post(reverse("booker_api:booking-list"), payload)
 
-    assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
+    assert response.status_code == status.HTTP_400_BAD_REQUEST, response.json()
     assert "slot" in response.json().keys()
 
 
@@ -176,7 +176,7 @@ def test_cancel_day_before_ok(
 
     response = api_client.post(reverse("booker_api:booking-cancel"), payload)
 
-    assert response.status_code == http.HTTPStatus.NO_CONTENT, response.json()
+    assert response.status_code == status.HTTP_204_NO_CONTENT, response.json()
 
 
 @pytest.mark.parametrize(
@@ -191,7 +191,7 @@ def test_cancel_day_before_ok(
 def test_cancel_bad_request(payload, error_in, api_client):
     response = api_client.post(reverse("booker_api:booking-cancel"), payload)
 
-    assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
+    assert response.status_code == status.HTTP_400_BAD_REQUEST, response.json()
     assert not error_in.difference(response.json().keys())
 
 
@@ -215,5 +215,5 @@ def test_cancel_hour_has_passed(
 
     response = api_client.post(reverse("booker_api:booking-cancel"), payload)
 
-    assert response.status_code == http.HTTPStatus.BAD_REQUEST, response.json()
+    assert response.status_code == status.HTTP_400_BAD_REQUEST, response.json()
     assert api_settings.NON_FIELD_ERRORS_KEY in response.json().keys()
