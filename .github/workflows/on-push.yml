@@ -13,14 +13,12 @@ jobs:
       - name: Set up Poetry
         uses: abatilo/actions-poetry@v2
       - name: Build
-        run: >-
-          poetry install --no-root
+        run: poetry install --no-root
       - name: Lint
-        run: >-
+        run: |
           poetry run black . --check
           poetry run isort . --check
           poetry run flake8 .
           poetry run pytest
       - name: Test
-        run: >-
-          poetry run pytest
+        run: poetry run pytest
