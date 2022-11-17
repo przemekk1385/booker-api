@@ -1,0 +1,53 @@
+version: "3.8"
+
+x-postgres-variables: &postgres-variables
+  POSTGRES_DB: booker
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+services:
+  app:
+    command: gunicorn booker.wsgi:application --bind 0.0.0.0:8000
+    environment:
+      <<: *postgres-variables
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
+      SECRET_KEY: ${SECRET_KEY}
+    ports:
+      - "${COMPOSE_APP_PORT}:8000"
+    networks:
+      - shared_services
+    volumes:
+      - static_volume:/code/static
+      - media_volume:/code/media
+
+networks:
+  shared_services:
+    external: true
+
+volumes:
+  static_volume:
+  media_volume:
+
+
+
+
+
+
+
+app:
+    build:
+      context: .
+      args:
+        GIT_USER_NAME: ${GIT_USER_NAME}
+        GIT_USER_EMAIL: ${GIT_USER_EMAIL}
+    command: gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+      - proxy
+    volumes:
+      - static_volume:/usr/local/src/app/static
+      - media_volume:/usr/local/src/app/media

@@ -19,11 +19,8 @@ runserver:
 shell:
 	doppler run -- ./manage.py shell
 
-up_db:
+up-db:
 	doppler run -- docker-compose -f docker-compose.dev.yml up -d db
 
 down:
 	doppler run -- docker-compose -f docker-compose.dev.yml down
-
-requirements:
-	poetry export -f requirements.txt --output requirements.txt
