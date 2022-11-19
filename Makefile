@@ -1,26 +1,29 @@
-compilemessages:
+manage/collectstatic:
+	doppler run -- ./manage.py collectstatic
+
+manage/compilemessages:
 	doppler run -- ./manage.py compilemessages
 
-createsuperuser:
+manage/createsuperuser:
 	doppler run -- ./manage.py createsuperuser
 
-makemessages:
+manage/makemessages:
 	doppler run -- ./manage.py makemessages
 
-makemigrations:
+manage/makemigrations:
 	doppler run -- ./manage.py makemigrations
 
-migrate:
+manage/migrate:
 	doppler run -- ./manage.py migrate
 
-runserver:
+manage/runserver:
 	doppler run -- ./manage.py runserver
 
-shell:
+manage/shell:
 	doppler run -- ./manage.py shell
 
-up-db:
-	doppler run -- docker-compose -f docker-compose.dev.yml up -d db
-
-down:
+docker/down:
 	doppler run -- docker-compose -f docker-compose.dev.yml down
+
+docker/up:
+	doppler run -- docker-compose -f docker-compose.dev.yml up -d
