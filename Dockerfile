@@ -16,3 +16,5 @@ WORKDIR /code
 COPY . /code/
 
 RUN poetry install --without=dev
+
+ENTRYPOINT ["/code/entrypoint.sh"]
