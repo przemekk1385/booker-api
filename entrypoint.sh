@@ -6,7 +6,7 @@ do
   sleep 5
 done
 
-make manage/migrate
-make manage/collectstatic
+./manage.py migrate
+./manage.py collectstatic
 
 exec "$@"
