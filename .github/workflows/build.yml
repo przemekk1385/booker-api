@@ -1,9 +1,10 @@
-name: on-push
+name: build
 on: [push]
+
 jobs:
   build-lint-test:
     runs-on: ubuntu-latest
-    
+
     services:
       db:
         image: postgres
@@ -16,7 +17,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
