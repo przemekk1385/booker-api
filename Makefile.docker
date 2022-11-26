@@ -1,6 +1,9 @@
 docker/down:
 	doppler run -- docker-compose down
 
+docker/down/dev:
+	doppler run -- docker-compose -f docker-compose.dev.yml down
+
 docker/up:
 	doppler run -- docker-compose up -d
 
