@@ -1,0 +1,16 @@
+.DS_store
+__pycache__/
+
+.dockerignore
+.flake8
+.git/
+.github/
+.gitignore
+.idea/
+.isort.cfg
+.pre-commit-config.yaml
+.pytest_cache/
+.python-version
+Makefile*
+pytest.ini
+tests/
