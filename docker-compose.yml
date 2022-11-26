@@ -8,11 +8,16 @@ services:
   app:
     command: gunicorn booker.wsgi:application --bind 0.0.0.0:8000
     environment:
-      <<: *postgres-variables
-      ALLOWED_HOSTS: ${APP_ALLOWED_HOSTS}
-      SECRET_KEY: ${APP_SECRET_KEY}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
+      CORS_ORIGIN_WHITELIST: ${CORS_ORIGIN_WHITELIST}
+      DATABASE_URL: ${DATABASE_URL}
+      DEBUG: ${DEBUG}
+      SECRET_KEY: ${SECRET_KEY}
+      B_CODE_LENGTH: ${B_CODE_LENGTH}
+      B_DAYS_BETWEEN: ${B_DAYS_BETWEEN}
+      B_TOTAL_APARTMENTS: ${B_TOTAL_APARTMENTS}
     ports:
-      - "${APP_PORT}:8000"
+      - "${APP_SERVICE_PORT}:8000"
     networks:
       - shared_services
     volumes:

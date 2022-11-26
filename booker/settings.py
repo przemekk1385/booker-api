@@ -16,9 +16,6 @@ import dj_database_url
 import environ
 
 env = environ.Env(
-    ALLOWED_HOSTS=(list, ["localhost", "127.0.0.1"]),
-    CORS_ORIGIN_WHITELIST=(list, []),
-    DATABASE_URL=(str, "postgresql://postgres:postgres@localhost/postgres"),
     DEBUG=(bool, False),
 )
 
