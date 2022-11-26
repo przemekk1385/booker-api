@@ -15,4 +15,4 @@ WORKDIR /code
 
 COPY . /code/
 
-RUN poetry install
+RUN poetry install --without=dev
