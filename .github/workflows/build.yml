@@ -2,7 +2,7 @@ name: build
 on: [push]
 
 jobs:
-  build-lint-test:
+  build:
     runs-on: ubuntu-latest
 
     services:
@@ -37,4 +37,11 @@ jobs:
       - name: Test
         run: poetry run pytest
         env:
-          SECRET_KEY: github-actions-secret-key
+          ALLOWED_HOSTS:
+          CORS_ORIGIN_WHITELIST:
+          CSRF_TRUSTED_ORIGINS:
+          DATABASE_URL: postgres:postgres@postgres/postgres
+          SECRET_KEY: test
+          B_CODE_LENGTH: 4
+          B_DAYS_BETWEEN: 2
+          B_TOTAL_APARTMENTS: 18
