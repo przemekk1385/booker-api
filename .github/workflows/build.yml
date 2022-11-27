@@ -40,7 +40,7 @@ jobs:
           ALLOWED_HOSTS:
           CORS_ORIGIN_WHITELIST:
           CSRF_TRUSTED_ORIGINS:
-          DATABASE_URL: postgres:postgres@localhost/postgres
+          DATABASE_URL: postgres://postgres:postgres@postgres/postgres
           SECRET_KEY: test
           B_CODE_LENGTH: 4
           B_DAYS_BETWEEN: 2
