@@ -168,3 +168,9 @@ REST_FRAMEWORK = {
 # https://github.com/adamchainz/django-cors-headers
 
 CORS_ORIGIN_WHITELIST = env.list("CORS_ORIGIN_WHITELIST")
+
+
+# Trusted origins for unsafe requests
+# https://docs.djangoproject.com/en/4.1/ref/settings/#csrf-trusted-origins
+
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS")
