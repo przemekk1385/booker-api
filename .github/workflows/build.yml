@@ -34,9 +34,9 @@ jobs:
       - name: Test
         run: poetry run pytest
         env:
-          ALLOWED_HOSTS: []
-          CORS_ORIGIN_WHITELIST: []
-          CSRF_TRUSTED_ORIGINS: []
+          ALLOWED_HOSTS: "[]"
+          CORS_ORIGIN_WHITELIST: "[]"
+          CSRF_TRUSTED_ORIGINS: "[]"
           DATABASE_URL: postgres://postgres:postgres@postgres/postgres
           SECRET_KEY: test
           B_CODE_LENGTH: 4
