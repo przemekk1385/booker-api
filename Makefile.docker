@@ -1,11 +1,18 @@
+docker/up:
+	doppler run -- docker-compose up -d
+
+docker/up/dev:
+	doppler run -- docker-compose -f docker-compose.dev.yml up -d
+
 docker/down:
 	doppler run -- docker-compose down
 
 docker/down/dev:
 	doppler run -- docker-compose -f docker-compose.dev.yml down
 
-docker/up:
-	doppler run -- docker-compose up -d
-
-docker/up/dev:
-	doppler run -- docker-compose -f docker-compose.dev.yml up -d
+docker/stop:
+	pwd \
+| xargs basename \
+| xargs -I {} echo "-qf name=^{}.+$$" \
+| xargs docker ps \
+| xargs -L1 docker stop
