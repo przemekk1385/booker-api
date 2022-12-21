@@ -7,7 +7,7 @@ jobs:
     container: python:3.10-bullseye
 
     services:
-      db:
+      postgres:
         image: postgres
         env:
           POSTGRES_PASSWORD: postgres
@@ -34,10 +34,10 @@ jobs:
       - name: Test
         run: poetry run pytest
         env:
-          ALLOWED_HOSTS:
-          CORS_ORIGIN_WHITELIST:
-          CSRF_TRUSTED_ORIGINS:
-          DATABASE_URL: postgres://postgres:postgres@localhost/postgres
+          ALLOWED_HOSTS: []
+          CORS_ORIGIN_WHITELIST: []
+          CSRF_TRUSTED_ORIGINS: []
+          DATABASE_URL: postgres://postgres:postgres@postgres/postgres
           SECRET_KEY: test
           B_CODE_LENGTH: 4
           B_DAYS_BETWEEN: 2
