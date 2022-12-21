@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+    command: gunicorn booker.wsgi:application --bind 0.0.0.0:8000
+    environment:
+      ALLOWED_HOSTS: ${APP_ALLOWED_HOSTS}
+      CORS_ORIGIN_WHITELIST: ${APP_CORS_ORIGIN_WHITELIST}
+      CSRF_TRUSTED_ORIGINS: ${APP_CSRF_TRUSTED_ORIGINS}
+      DATABASE_URL: ${APP_DATABASE_URL}
+      DEBUG: ${APP_DEBUG:-False}
+      SECRET_KEY: ${APP_SECRET_KEY}
+      B_CODE_LENGTH: ${APP_B_CODE_LENGTH:-4}
+      B_DAYS_BETWEEN: ${APP_B_DAYS_BETWEEN}
+      B_TOTAL_APARTMENTS: ${APP_B_TOTAL_APARTMENTS}
+    ports:
+      - "${APP_SERVICE_PORT}:8000"
+    networks:
+      - shared_services
+    volumes:
+      - static_volume:/code/static
+      - media_volume:/code/media
+
+networks:
+  shared_services:
+    external: true
+
+volumes:
+  static_volume:
+  media_volume:

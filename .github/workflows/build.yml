@@ -1,0 +1,44 @@
+name: build
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: python:3.10-bullseye
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Poetry
+        run: pip install poetry
+      - name: Build
+        run: poetry install --no-root
+      - name: Lint
+        run: |
+          poetry run black . --check
+          poetry run isort . --check
+          poetry run flake8 .
+      - name: Test
+        run: poetry run pytest
+        env:
+          ALLOWED_HOSTS: "[]"
+          CORS_ORIGIN_WHITELIST: "[]"
+          CSRF_TRUSTED_ORIGINS: "[]"
+          DATABASE_URL: postgres://postgres:postgres@postgres/postgres
+          SECRET_KEY: test
+          B_CODE_LENGTH: 4
+          B_DAYS_BETWEEN: 2
+          B_TOTAL_APARTMENTS: 18

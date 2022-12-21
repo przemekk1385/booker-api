@@ -16,10 +16,7 @@ import dj_database_url
 import environ
 
 env = environ.Env(
-    DATABASE_URL=(str, None),
     DEBUG=(bool, False),
-    ALLOWED_HOSTS=(list, ["localhost", "127.0.0.1"]),
-    CORS_ORIGIN_WHITELIST=(list, []),
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -92,20 +89,7 @@ WSGI_APPLICATION = "booker.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = (
-    {"default": dj_database_url.config()}
-    if env("DATABASE_URL")
-    else {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql_psycopg2",
-            "NAME": env("POSTGRES_DB"),
-            "USER": env("POSTGRES_USER"),
-            "PASSWORD": env("POSTGRES_PASSWORD"),
-            "HOST": "localhost",
-            "PORT": "5432",
-        }
-    }
-)
+DATABASES = {"default": dj_database_url.parse(env("DATABASE_URL"))}
 
 
 # Password validation
@@ -184,3 +168,9 @@ REST_FRAMEWORK = {
 # https://github.com/adamchainz/django-cors-headers
 
 CORS_ORIGIN_WHITELIST = env.list("CORS_ORIGIN_WHITELIST")
+
+
+# Trusted origins for unsafe requests
+# https://docs.djangoproject.com/en/4.1/ref/settings/#csrf-trusted-origins
+
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS")
