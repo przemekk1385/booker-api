@@ -5,13 +5,13 @@ from django.db import migrations
 
 from booker_api.utils import make_code
 
-env = environ.Env(B_TOTAL_APARTMENTS=(int, 10))
+env = environ.Env(TOTAL_APARTMENTS=(int, 10))
 
 
 def make_apartments(apps, schema_editor):
     Apartment = apps.get_model("booker_api", "Apartment")
     if not Apartment.objects.exists():
-        for i in range(env("B_TOTAL_APARTMENTS")):
+        for i in range(env("TOTAL_APARTMENTS")):
             Apartment.objects.create(code=make_code(), number=i + 1)
 
 

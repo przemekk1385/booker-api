@@ -6,27 +6,51 @@ services:
       context: .
     command: gunicorn booker.wsgi:application --bind 0.0.0.0:8000
     environment:
-      ALLOWED_HOSTS: ${APP_ALLOWED_HOSTS}
-      CORS_ORIGIN_WHITELIST: ${APP_CORS_ORIGIN_WHITELIST}
-      CSRF_TRUSTED_ORIGINS: ${APP_CSRF_TRUSTED_ORIGINS}
-      DATABASE_URL: ${APP_DATABASE_URL}
-      DEBUG: ${APP_DEBUG:-False}
-      SECRET_KEY: ${APP_SECRET_KEY}
-      B_CODE_LENGTH: ${APP_B_CODE_LENGTH:-4}
-      B_DAYS_BETWEEN: ${APP_B_DAYS_BETWEEN}
-      B_TOTAL_APARTMENTS: ${APP_B_TOTAL_APARTMENTS}
+      - ALLOWED_HOSTS_FILE=/run/secrets/allowed_hosts
+      - CORS_ORIGIN_WHITELIST_FILE=/run/secrets/cors_origin_whitelist
+      - CSRF_TRUSTED_ORIGINS_FILE=/run/secrets/csrf_trusted_origins
+      - DATABASE_URL_FILE=/run/secrets/database_url
+      - SECRET_KEY_FILE=/run/secrets/secret_key
+      - CODE_LENGTH=4
+      - DAYS_BETWEEN=1
+      - TOTAL_APARTMENTS=18
     ports:
-      - "${APP_SERVICE_PORT}:8000"
-    networks:
-      - shared_services
+      - "8000:8000"
+    restart: always
+    secrets:
+      - allowed_hosts
+      - cors_origin_whitelist
+      - csrf_trusted_origins
+      - database_url
+      - secret_key
     volumes:
       - static_volume:/code/static
       - media_volume:/code/media
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+    restart: always
+    secrets:
+      - postgres_password
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
 
-networks:
-  shared_services:
-    external: true
+secrets:
+  allowed_hosts:
+    file: ./secrets/allowed_hosts
+  cors_origin_whitelist:
+    file: ./secrets/cors_origin_whitelist
+  csrf_trusted_origins:
+    file: ./secrets/csrf_trusted_origins
+  database_url:
+    file: ./secrets/database_url
+  secret_key:
+    file: ./secrets/secret_key
+  postgres_password:
+    file: ./secrets/postgres_password
 
 volumes:
-  static_volume:
   media_volume:
+  static_volume:
+  postgres_volume:
