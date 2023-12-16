@@ -4,11 +4,15 @@ services:
     image: postgres
     restart: always
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
     ports:
-      - "${POSTGRES_SERVICE_PORT:-5432}:5432"
+      - "5432:5432"
     volumes:
       - db_volume:/var/lib/postgresql/data
+
+secrets:
+  postgres_password:
+    file: ./secrets/postgres_password
 
 volumes:
   db_volume:

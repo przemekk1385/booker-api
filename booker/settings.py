@@ -15,7 +15,7 @@ from pathlib import Path
 import dj_database_url
 import environ
 
-env = environ.Env(
+env = environ.FileAwareEnv(
     DEBUG=(bool, False),
 )
 
